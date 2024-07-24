@@ -5,6 +5,7 @@ import { useState } from "react";
 export default function Home() {
 	const [url, setUrl] = useState("");
 	const [result, setResult] = useState("");
+	const [criticalCss, setCriticalCSS] = useState("");
 	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async (e) => {
@@ -20,6 +21,7 @@ export default function Home() {
 
 			if (response.ok) {
 				setResult(data.combinedCss);
+				setCriticalCSS(data.criticalCss);
 			} else {
 				setResult(`Error: ${data.error}`);
 			}
@@ -65,6 +67,16 @@ export default function Home() {
 									: "Generate Critical Path CSS"}
 							</button>
 						</form>
+					</section>
+					<section id="results">
+						{criticalCss && (
+							<textarea
+								name="criticalCss"
+								rows={10}
+								cols={100}
+								defaultValue={criticalCss}
+							/>
+						)}
 					</section>
 					<section id="results">
 						{result && (

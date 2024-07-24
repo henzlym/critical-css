@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer";
+import { optimizeCSS, removeCriticalFromCombined } from "../../../gulpfile";
 
 export default async function handler(req, res) {
 	const { url } = req.query;
@@ -20,6 +21,29 @@ export default async function handler(req, res) {
 			).map((link) => link.href);
 		});
 
+		const htmlContent = await page.content();
+		const criticalCss = await page.evaluate(() => {
+			const maxHeight = 900;
+			const criticalStyles = new Set();
+			const addCriticalStyle = (element) => {
+				if (element.nodeType !== Node.ELEMENT_NODE) return;
+				const rect = element.getBoundingClientRect();
+				if (rect.top >= maxHeight) return;
+
+				const styles = window.getComputedStyle(element);
+				for (let i = 0; i < styles.length; i++) {
+					criticalStyles.add(
+						`${styles[i]}: ${styles.getPropertyValue(styles[i])};`
+					);
+				}
+				for (const child of element.children) {
+					addCriticalStyle(child);
+				}
+			};
+			addCriticalStyle(document.body);
+			return Array.from(criticalStyles).join(" ");
+		});
+
 		await browser.close();
 
 		let combinedCss = "";
@@ -29,7 +53,17 @@ export default async function handler(req, res) {
 			combinedCss += cssContent;
 		}
 
-		res.status(200).json({ combinedCss });
+		// Optimize the combined CSS using Gulp with PurgeCSS
+		const optimizedCombinedCss = await optimizeCSS(
+			combinedCss,
+			htmlContent
+		);
+		const finalCombinedCss = await removeCriticalFromCombined(
+			criticalCss,
+			optimizedCombinedCss
+		);
+
+		res.status(200).json({ combinedCss: finalCombinedCss, criticalCss });
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}

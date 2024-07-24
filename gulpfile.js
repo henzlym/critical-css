@@ -1,60 +1,83 @@
 const gulp = require("gulp");
-const puppeteer = require("puppeteer");
-const fs = require("fs");
-const path = require("path");
-const concat = require("gulp-concat");
 const postcss = require("gulp-postcss");
 const autoprefixer = require("autoprefixer");
 const cssnano = require("cssnano");
+const purgecss = require("@fullhuman/postcss-purgecss");
+const discardDuplicates = require("postcss-discard-duplicates");
+const through = require("through2");
+const fs = require("fs");
+const path = require("path");
 
-const targetUrl = "https://example.com"; // Replace with the target URL to crawl
-const tempDir = path.resolve(__dirname, "../temp");
-const combinedCssFile = "combined.css";
+const optimizeCSS = (inputCss, htmlContent) => {
+	return new Promise((resolve, reject) => {
+		const tempCssFilePath = path.join(__dirname, "temp.css");
+		const tempHtmlFilePath = path.join(__dirname, "temp.html");
 
-function ensureTempDirectory() {
-	if (!fs.existsSync(tempDir)) {
-		fs.mkdirSync(tempDir, { recursive: true });
-	}
-}
+		fs.writeFileSync(tempCssFilePath, inputCss);
+		fs.writeFileSync(tempHtmlFilePath, htmlContent);
 
-function getDomainFromUrl(url) {
-	const { hostname } = new URL(url);
-	return hostname;
-}
-
-async function crawlAndDownloadCSS() {
-	ensureTempDirectory();
-
-	const selectedDomain = getDomainFromUrl(targetUrl);
-	const browser = await puppeteer.launch();
-	const page = await browser.newPage();
-	await page.goto(targetUrl);
-
-	const cssLinks = await page.evaluate((selectedDomain) => {
-		return Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-			.filter((link) => link.href.includes(selectedDomain))
-			.map((link) => link.href);
-	}, selectedDomain);
-
-	await browser.close();
-
-	const downloadPromises = cssLinks.map(async (cssUrl, index) => {
-		const response = await fetch(cssUrl);
-		const cssContent = await response.text();
-		const cssPath = path.join(tempDir, `style${index}.css`);
-		fs.writeFileSync(cssPath, cssContent);
-		return cssPath;
+		gulp.src(tempCssFilePath)
+			.pipe(
+				postcss([
+					purgecss({
+						content: [tempHtmlFilePath],
+						defaultExtractor: (content) =>
+							content.match(/[\w-/:]+(?<!:)/g) || [],
+					}),
+					autoprefixer(),
+					cssnano(),
+				])
+			)
+			.pipe(
+				through.obj((file, enc, cb) => {
+					resolve(file.contents.toString());
+					cb(null, file);
+				})
+			)
+			.on("error", (err) => {
+				reject(err);
+			})
+			.on("end", () => {
+				fs.unlinkSync(tempCssFilePath);
+				fs.unlinkSync(tempHtmlFilePath);
+			})
+			.pipe(gulp.dest("dist"));
 	});
+};
 
-	return Promise.all(downloadPromises);
-}
+const removeCriticalFromCombined = (criticalCss, combinedCss) => {
+	return new Promise((resolve, reject) => {
+		const tempCriticalPath = path.join(__dirname, "temp-critical.css");
+		const tempCombinedPath = path.join(__dirname, "temp-combined.css");
 
-gulp.task("combine-css", async () => {
-	const cssFiles = await crawlAndDownloadCSS();
+		fs.writeFileSync(tempCriticalPath, criticalCss);
+		fs.writeFileSync(tempCombinedPath, combinedCss);
 
-	return gulp
-		.src(cssFiles)
-		.pipe(concat(combinedCssFile))
-		.pipe(postcss([autoprefixer(), cssnano()]))
-		.pipe(gulp.dest("dist/styles")); // Adjust the output directory as needed
-});
+		gulp.src(tempCombinedPath)
+			.pipe(
+				postcss([
+					discardDuplicates({
+						from: tempCriticalPath,
+					}),
+					autoprefixer(),
+					cssnano(),
+				])
+			)
+			.pipe(
+				through.obj((file, enc, cb) => {
+					resolve(file.contents.toString());
+					cb(null, file);
+				})
+			)
+			.on("error", (err) => {
+				reject(err);
+			})
+			.on("end", () => {
+				fs.unlinkSync(tempCriticalPath);
+				fs.unlinkSync(tempCombinedPath);
+			})
+			.pipe(gulp.dest("dist"));
+	});
+};
+
+module.exports = { optimizeCSS, removeCriticalFromCombined };
