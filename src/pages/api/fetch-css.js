@@ -1,5 +1,56 @@
+import autoprefixer from "autoprefixer";
+import cssnano from "cssnano";
+import postcss from "postcss";
 import puppeteer from "puppeteer";
-import { optimizeCSS, removeCriticalFromCombined } from "../../../gulpfile";
+import { PurgeCSS } from "purgecss";
+
+async function captureAboveTheFoldHTML(page) {
+	// Set viewport to capture above-the-fold content
+	await page.setViewport({ width: 1280, height: 900 });
+
+	// Get the above-the-fold HTML content
+	const aboveTheFoldHTML = await page.evaluate(() => {
+		function cloneAboveTheFold(element, maxHeight) {
+			if (element.nodeType !== Node.ELEMENT_NODE) {
+				return element.cloneNode(true);
+			}
+
+			const rect = element.getBoundingClientRect();
+			if (rect.top >= maxHeight) {
+				return null;
+			}
+
+			const clone = element.cloneNode(false);
+			for (const child of element.childNodes) {
+				const clonedChild = cloneAboveTheFold(child, maxHeight);
+				if (clonedChild) {
+					clone.appendChild(clonedChild);
+				}
+			}
+			return clone;
+		}
+
+		const maxHeight = 900;
+		const bodyClone = document.createElement("body");
+
+		for (const child of document.body.childNodes) {
+			const clonedChild = cloneAboveTheFold(child, maxHeight);
+			if (clonedChild) {
+				bodyClone.appendChild(clonedChild);
+			}
+		}
+
+		const doctype = new XMLSerializer().serializeToString(document.doctype);
+		const htmlClone = document.documentElement.cloneNode(false);
+		const headClone = document.head.cloneNode(true);
+		htmlClone.appendChild(headClone);
+		htmlClone.appendChild(bodyClone);
+
+		return `${doctype}\n${htmlClone.outerHTML}`;
+	});
+
+	return aboveTheFoldHTML;
+}
 
 export default async function handler(req, res) {
 	const { url } = req.query;
@@ -13,35 +64,19 @@ export default async function handler(req, res) {
 			args: ["--no-sandbox", "--disable-setuid-sandbox"],
 		});
 		const page = await browser.newPage();
+
 		await page.goto(url);
+
+		await page.setViewport({ width: 1280, height: 900 });
+
+		const htmlContent = await page.content();
+
+		// const aboveTheFoldHTML = await captureAboveTheFoldHTML(htmlContent);
 
 		const cssLinks = await page.evaluate(() => {
 			return Array.from(
 				document.querySelectorAll('link[rel="stylesheet"]')
 			).map((link) => link.href);
-		});
-
-		const htmlContent = await page.content();
-		const criticalCss = await page.evaluate(() => {
-			const maxHeight = 900;
-			const criticalStyles = new Set();
-			const addCriticalStyle = (element) => {
-				if (element.nodeType !== Node.ELEMENT_NODE) return;
-				const rect = element.getBoundingClientRect();
-				if (rect.top >= maxHeight) return;
-
-				const styles = window.getComputedStyle(element);
-				for (let i = 0; i < styles.length; i++) {
-					criticalStyles.add(
-						`${styles[i]}: ${styles.getPropertyValue(styles[i])};`
-					);
-				}
-				for (const child of element.children) {
-					addCriticalStyle(child);
-				}
-			};
-			addCriticalStyle(document.body);
-			return Array.from(criticalStyles).join(" ");
 		});
 
 		await browser.close();
@@ -53,18 +88,45 @@ export default async function handler(req, res) {
 			combinedCss += cssContent;
 		}
 
-		// Optimize the combined CSS using Gulp with PurgeCSS
-		const optimizedCombinedCss = await optimizeCSS(
+		const combined = await postcss([autoprefixer(), cssnano()]).process(
 			combinedCss,
-			htmlContent
-		);
-		const finalCombinedCss = await removeCriticalFromCombined(
-			criticalCss,
-			optimizedCombinedCss
+			{
+				from: undefined,
+			}
 		);
 
-		res.status(200).json({ combinedCss: finalCombinedCss, criticalCss });
+		console.log("Hellow");
+
+		const purgecss = await new PurgeCSS().purge({
+			content: [
+				{
+					raw: htmlContent,
+					extension: "html",
+				},
+			],
+			css: [
+				{
+					raw: combinedCss,
+				},
+			],
+		});
+
+		const critical = await postcss([autoprefixer(), cssnano()]).process(
+			purgecss[0].css,
+			{
+				from: undefined,
+			}
+		);
+
+		// const critical = "";
+
+		res.status(200).json({
+			minified: combined.css,
+			unminified: combinedCss,
+			critical: critical.css,
+			message: "Hello",
+		});
 	} catch (error) {
-		res.status(500).json({ error: error.message });
+		res.status(500).json({ error: "Failed to minify CSS" });
 	}
 }
