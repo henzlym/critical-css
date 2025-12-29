@@ -149,11 +149,6 @@ export default function Home() {
 			<header>
 				<div className="container">
 					<h1>Critical Path CSS Generator</h1>
-					{/* <nav>
-						<a href="#">Home</a>
-						<a href="#">Articles</a>
-						<a href="#">Blog</a>
-					</nav> */}
 				</div>
 			</header>
 
