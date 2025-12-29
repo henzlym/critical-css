@@ -447,9 +447,11 @@ main {
 	border-radius: var(--radius-sm);
 	overflow: hidden;
 
+
 }
 .collapsible-content.expanded .result-code-container {
 	border: 1px solid var(--glass-border);
+		margin-bottom: 1rem;
 }
 .result-code-header {
 	display: flex;
