@@ -4,6 +4,24 @@ import postcss from "postcss";
 import puppeteer from "puppeteer";
 import { PurgeCSS } from "purgecss";
 
+/**
+ * Captures only the above-the-fold HTML content from a page.
+ *
+ * Recursively clones DOM elements that are visible within the viewport height (900px).
+ * Useful for generating truly critical CSS that only includes styles needed for
+ * initial page render without scrolling.
+ *
+ * @param {import('puppeteer').Page} page - Puppeteer page instance
+ * @returns {Promise<string>} HTML string containing only above-the-fold content
+ *
+ * @description
+ * This function:
+ * 1. Sets viewport to 1280x900
+ * 2. Traverses the DOM and clones only elements with top position < 900px
+ * 3. Reconstructs a complete HTML document with doctype, head, and filtered body
+ *
+ * @note Currently commented out in handler but available for future critical CSS improvements
+ */
 async function captureAboveTheFoldHTML(page) {
 	// Set viewport to capture above-the-fold content
 	await page.setViewport({ width: 1280, height: 900 });
@@ -52,6 +70,32 @@ async function captureAboveTheFoldHTML(page) {
 	return aboveTheFoldHTML;
 }
 
+/**
+ * API Route Handler - Extract and process CSS from a URL
+ *
+ * Fetches a webpage using Puppeteer, extracts all linked stylesheets,
+ * and processes them through PostCSS pipeline (autoprefixer + cssnano + purgecss).
+ *
+ * @param {import('next').NextApiRequest} req - Next.js API request
+ * @param {import('next').NextApiResponse} res - Next.js API response
+ *
+ * @query {string} url - Target webpage URL to extract CSS from
+ *
+ * @returns {Object} JSON response with CSS variants:
+ * @returns {string} minified - All stylesheets combined and minified
+ * @returns {string} unminified - All stylesheets combined without minification
+ * @returns {string} critical - CSS purged to only include rules used in the HTML
+ * @returns {Array<Object>} stylesheets - Metadata for each extracted stylesheet:
+ *   - id: Unique identifier
+ *   - url: Full stylesheet URL
+ *   - filename: Extracted filename
+ *   - size: Size in bytes
+ *   - sizeFormatted: Human-readable size
+ *
+ * @example
+ * // GET /api/fetch-css?url=https://example.com
+ * // Response: { minified: "...", unminified: "...", critical: "...", stylesheets: [...] }
+ */
 export default async function handler(req, res) {
 	const { url } = req.query;
 
@@ -82,9 +126,25 @@ export default async function handler(req, res) {
 		await browser.close();
 
 		let combinedCss = "";
+		const stylesheets = [];
+
 		for (const cssUrl of cssLinks) {
 			const response = await fetch(cssUrl);
 			const cssContent = await response.text();
+			const size = new TextEncoder().encode(cssContent).length;
+
+			stylesheets.push({
+				id: stylesheets.length + 1,
+				url: cssUrl,
+				filename:
+					cssUrl.split("/").pop().split("?")[0] || "stylesheet.css",
+				size,
+				sizeFormatted:
+					size > 1024
+						? `${(size / 1024).toFixed(1)} KB`
+						: `${size} B`,
+			});
+
 			combinedCss += cssContent;
 		}
 
@@ -94,8 +154,6 @@ export default async function handler(req, res) {
 				from: undefined,
 			}
 		);
-
-		console.log("Hellow");
 
 		const purgecss = await new PurgeCSS().purge({
 			content: [
@@ -118,13 +176,44 @@ export default async function handler(req, res) {
 			}
 		);
 
-		// const critical = "";
+		// Calculate sizes for comparison
+		const originalSize = new TextEncoder().encode(combinedCss).length;
+		const minifiedSize = new TextEncoder().encode(combined.css).length;
+		const criticalSize = new TextEncoder().encode(critical.css).length;
+
+		/**
+		 * Formats byte size to human-readable string
+		 * @param {number} bytes - Size in bytes
+		 * @returns {string} Formatted size (e.g., "122.3 KB")
+		 */
+		const formatSize = (bytes) => {
+			if (bytes >= 1024 * 1024) {
+				return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+			} else if (bytes >= 1024) {
+				return `${(bytes / 1024).toFixed(1)} KB`;
+			}
+			return `${bytes} B`;
+		};
 
 		res.status(200).json({
 			minified: combined.css,
 			unminified: combinedCss,
 			critical: critical.css,
-			message: "Hello",
+			stylesheets,
+			sizes: {
+				original: originalSize,
+				originalFormatted: formatSize(originalSize),
+				minified: minifiedSize,
+				minifiedFormatted: formatSize(minifiedSize),
+				critical: criticalSize,
+				criticalFormatted: formatSize(criticalSize),
+				minifiedReduction: Math.round(
+					(1 - minifiedSize / originalSize) * 100
+				),
+				criticalReduction: Math.round(
+					(1 - criticalSize / originalSize) * 100
+				),
+			},
 		});
 	} catch (error) {
 		res.status(500).json({ error: "Failed to minify CSS" });
