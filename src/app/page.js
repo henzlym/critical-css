@@ -135,10 +135,15 @@ export default function Home() {
 				setStylesheets(data.stylesheets || []);
 				setSizes(data.sizes || null);
 			} else {
-				setMinified(`Error: ${data.error}`);
+				// Show detailed error information
+				const errorMessage = `Error: ${data.error}\n\nDetails: ${data.details || 'No additional details available'}`;
+				setMinified(errorMessage);
+				setCriticalCss(errorMessage);
 			}
 		} catch (error) {
-			setMinified(`Error: ${error.message}`);
+			const errorMessage = `Error: Failed to connect to API\n\nDetails: ${error.message}`;
+			setMinified(errorMessage);
+			setCriticalCss(errorMessage);
 		} finally {
 			setLoading(false);
 		}
