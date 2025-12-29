@@ -2,6 +2,7 @@
 import { TextControl } from "@wordpress/components";
 import "@wordpress/components/build-style/style.css";
 import { useState } from "react";
+import InstructionsDrawer from "./components/instructions-drawer";
 
 /**
  * MyTextControl Component
@@ -87,6 +88,17 @@ export default function Home() {
 	const [sizes, setSizes] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [copied, setCopied] = useState({ minified: false, critical: false });
+	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [drawerType, setDrawerType] = useState("minified");
+
+	/**
+	 * Opens the instructions drawer for a specific CSS type
+	 * @param {string} type - 'minified' or 'critical'
+	 */
+	const openInstructions = (type) => {
+		setDrawerType(type);
+		setDrawerOpen(true);
+	};
 
 	/**
 	 * Copies CSS content from a textarea to the clipboard.
@@ -214,15 +226,34 @@ export default function Home() {
 						>
 							<div className="critical-css-result critical-css-minified">
 								<div className="result-header">
-									<h3>Combined & Minified CSS</h3>
+									<div className="result-header-top">
+										<h3>Combined & Minified CSS</h3>
+										<button
+											className="how-to-use-btn"
+											type="button"
+											onClick={() => openInstructions("minified")}
+										>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+												strokeLinecap="round"
+												strokeLinejoin="round"
+											>
+												<circle cx="12" cy="12" r="10" />
+												<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+												<line x1="12" y1="17" x2="12.01" y2="17" />
+											</svg>
+											How to Use
+										</button>
+									</div>
 									<p className="result-description">
-										All stylesheets from the page merged
-										into one optimized file.
-										<strong>Why it matters:</strong> Fewer
-										HTTP requests means faster page loads.
-										<strong>How to use:</strong> Replace all
-										your CSS &lt;link&gt; tags with a single
-										reference to this file.
+										All stylesheets merged into one optimized file.
+										Fewer HTTP requests = faster page loads.
 									</p>
 								</div>
 
@@ -346,17 +377,34 @@ export default function Home() {
 						>
 							<div className="critical-css-result critical-css-critical">
 								<div className="result-header">
-									<h3>Critical CSS (Above-the-Fold)</h3>
+									<div className="result-header-top">
+										<h3>Critical CSS (Above-the-Fold)</h3>
+										<button
+											className="how-to-use-btn"
+											type="button"
+											onClick={() => openInstructions("critical")}
+										>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+												strokeLinecap="round"
+												strokeLinejoin="round"
+											>
+												<circle cx="12" cy="12" r="10" />
+												<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+												<line x1="12" y1="17" x2="12.01" y2="17" />
+											</svg>
+											How to Use
+										</button>
+									</div>
 									<p className="result-description">
-										Only the CSS needed to render visible
-										content before scrolling.
-										<strong>Why it matters:</strong>{" "}
-										Eliminates render-blocking CSS for
-										instant first paint.
-										<strong>How to use:</strong> Inline this
-										in a &lt;style&gt; tag in your
-										&lt;head&gt;, then load the full CSS
-										asynchronously.
+										Only the CSS needed for above-the-fold content.
+										Eliminates render-blocking for instant first paint.
 									</p>
 								</div>
 
@@ -481,6 +529,13 @@ export default function Home() {
 					<p>&copy; 2024 Your Company</p>
 				</div>
 			</footer>
+
+			{/* Instructions Drawer */}
+			<InstructionsDrawer
+				isOpen={drawerOpen}
+				onClose={() => setDrawerOpen(false)}
+				type={drawerType}
+			/>
 		</div>
 	);
 }

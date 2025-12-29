@@ -5,10 +5,13 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
+.claude
+.github
+.vscode
 
 # testing
 /coverage
-
+/docs/coverage
 # next.js
 /.next/
 /out/
