@@ -90,6 +90,22 @@ export default function Home() {
 	const [copied, setCopied] = useState({ minified: false, critical: false });
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const [drawerType, setDrawerType] = useState("minified");
+	// Collapsible sections: Critical CSS open by default, Combined CSS collapsed
+	const [sectionsExpanded, setSectionsExpanded] = useState({
+		minified: false,
+		critical: true,
+	});
+
+	/**
+	 * Toggles the expanded/collapsed state of a result section
+	 * @param {string} section - 'minified' or 'critical'
+	 */
+	const toggleSection = (section) => {
+		setSectionsExpanded((prev) => ({
+			...prev,
+			[section]: !prev[section],
+		}));
+	};
 
 	/**
 	 * Opens the instructions drawer for a specific CSS type
@@ -224,14 +240,49 @@ export default function Home() {
 							id="results"
 							className="critical-css-results"
 						>
-							<div className="critical-css-result critical-css-minified">
-								<div className="result-header">
+							<div className={`critical-css-result critical-css-minified ${sectionsExpanded.minified ? 'expanded' : 'collapsed'}`}>
+								<div
+									className="result-header collapsible-header"
+									onClick={() => toggleSection("minified")}
+									role="button"
+									tabIndex={0}
+									onKeyDown={(e) => e.key === 'Enter' && toggleSection("minified")}
+									aria-expanded={sectionsExpanded.minified}
+								>
 									<div className="result-header-top">
-										<h3>Combined & Minified CSS</h3>
+										<div className="result-title-row">
+											<span className={`collapse-icon ${sectionsExpanded.minified ? 'expanded' : ''}`}>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="20"
+													height="20"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													strokeWidth="2"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+												>
+													<polyline points="9 18 15 12 9 6" />
+												</svg>
+											</span>
+											<h3>Combined & Minified CSS</h3>
+											{sizes && (
+												<span className="result-size-badge header-badge">
+													{sizes.minifiedFormatted}
+													<span className="size-reduction">
+														({sizes.minifiedReduction}% smaller)
+													</span>
+												</span>
+											)}
+										</div>
 										<button
 											className="how-to-use-btn"
 											type="button"
-											onClick={() => openInstructions("minified")}
+											onClick={(e) => {
+												e.stopPropagation();
+												openInstructions("minified");
+											}}
 										>
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
@@ -257,6 +308,7 @@ export default function Home() {
 									</p>
 								</div>
 
+								<div className={`collapsible-content ${sectionsExpanded.minified ? 'expanded' : ''}`}>
 								<div className="result-code-container">
 									<div className="result-code-header">
 										<span className="result-filename">
@@ -367,6 +419,7 @@ export default function Home() {
 										)}
 									</button>
 								</div>
+								</div>{/* End collapsible-content */}
 							</div>
 						</section>
 					)}
@@ -375,14 +428,49 @@ export default function Home() {
 							id="results-critical"
 							className="critical-css-results"
 						>
-							<div className="critical-css-result critical-css-critical">
-								<div className="result-header">
+							<div className={`critical-css-result critical-css-critical ${sectionsExpanded.critical ? 'expanded' : 'collapsed'}`}>
+								<div
+									className="result-header collapsible-header"
+									onClick={() => toggleSection("critical")}
+									role="button"
+									tabIndex={0}
+									onKeyDown={(e) => e.key === 'Enter' && toggleSection("critical")}
+									aria-expanded={sectionsExpanded.critical}
+								>
 									<div className="result-header-top">
-										<h3>Critical CSS (Above-the-Fold)</h3>
+										<div className="result-title-row">
+											<span className={`collapse-icon ${sectionsExpanded.critical ? 'expanded' : ''}`}>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="20"
+													height="20"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													strokeWidth="2"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+												>
+													<polyline points="9 18 15 12 9 6" />
+												</svg>
+											</span>
+											<h3>Critical CSS (Above-the-Fold)</h3>
+											{sizes && (
+												<span className="result-size-badge header-badge">
+													{sizes.criticalFormatted}
+													<span className="size-reduction">
+														({sizes.criticalReduction}% smaller)
+													</span>
+												</span>
+											)}
+										</div>
 										<button
 											className="how-to-use-btn"
 											type="button"
-											onClick={() => openInstructions("critical")}
+											onClick={(e) => {
+												e.stopPropagation();
+												openInstructions("critical");
+											}}
 										>
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
@@ -408,6 +496,7 @@ export default function Home() {
 									</p>
 								</div>
 
+								<div className={`collapsible-content ${sectionsExpanded.critical ? 'expanded' : ''}`}>
 								<div className="result-code-container">
 									<div className="result-code-header">
 										<span className="result-filename">
@@ -518,6 +607,7 @@ export default function Home() {
 										)}
 									</button>
 								</div>
+								</div>{/* End collapsible-content */}
 							</div>
 						</section>
 					)}

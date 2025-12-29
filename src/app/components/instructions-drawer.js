@@ -93,7 +93,7 @@ function MinifiedInstructions() {
 				<div className="step-content">
 					<h4>Upload to Your Server</h4>
 					<p>
-						Save the file as <code>combined.min.css</code> in your website's
+						Save the file as <code>combined.min.css</code> in your website&apos;s
 						CSS directory (e.g., <code>/css/</code> or <code>/assets/css/</code>).
 					</p>
 				</div>
@@ -168,7 +168,7 @@ function CriticalInstructions() {
 				<p>
 					Critical CSS contains only the styles needed for above-the-fold
 					content. Implementing it correctly can dramatically improve your
-					page's perceived load time.
+					page&apos;s perceived load time.
 				</p>
 			</div>
 
@@ -238,7 +238,7 @@ function CriticalInstructions() {
 				<div className="step-number">3</div>
 				<div className="step-content">
 					<h4>Complete Example</h4>
-					<p>Here's how your complete <code>&lt;head&gt;</code> should look:</p>
+					<p>Here&apos;s how your complete <code>&lt;head&gt;</code> should look:</p>
 					<CodeBlock
 						language="html"
 						code={`<!DOCTYPE html>
@@ -275,7 +275,7 @@ function CriticalInstructions() {
 				<div className="step-content">
 					<h4>WordPress Users</h4>
 					<p>
-						If you're using WordPress, you can add critical CSS to your theme's{" "}
+						If you&apos;re using WordPress, you can add critical CSS to your theme&apos;s{" "}
 						<code>header.php</code> or use the <code>wp_head</code> action:
 					</p>
 					<CodeBlock
