@@ -1,8 +1,23 @@
 import autoprefixer from "autoprefixer";
 import cssnano from "cssnano";
 import postcss from "postcss";
-import puppeteer from "puppeteer";
 import { PurgeCSS } from "purgecss";
+
+// Conditionally import puppeteer based on environment
+// Use puppeteer-core with chromium for serverless (Vercel, AWS Lambda, etc.)
+// Use regular puppeteer for local development
+const isDev = process.env.NODE_ENV === "development";
+let puppeteer;
+let chromium;
+
+if (isDev) {
+	// Local development - use full puppeteer
+	puppeteer = (await import("puppeteer")).default;
+} else {
+	// Production (Vercel) - use puppeteer-core with serverless chromium
+	puppeteer = (await import("puppeteer-core")).default;
+	chromium = (await import("@sparticuz/chromium")).default;
+}
 
 /**
  * Captures only the above-the-fold HTML content from a page.
@@ -105,15 +120,23 @@ export default async function handler(req, res) {
 
 	let browser;
 	try {
-		browser = await puppeteer.launch({
+		// Configure browser options based on environment
+		const launchOptions = {
 			args: [
 				"--no-sandbox",
 				"--disable-setuid-sandbox",
 				"--disable-dev-shm-usage",
 				"--disable-gpu",
+				...(isDev ? [] : chromium.args),
 			],
-			headless: true,
-		});
+			headless: chromium?.headless ?? true,
+			...(isDev ? {} : {
+				executablePath: await chromium.executablePath(),
+				ignoreHTTPSErrors: true,
+			}),
+		};
+
+		browser = await puppeteer.launch(launchOptions);
 		const page = await browser.newPage();
 
 		// Set a reasonable timeout for navigation

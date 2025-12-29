@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"@fullhuman/postcss-purgecss": "^6.0.0",
+		"@sparticuz/chromium": "^143.0.0",
 		"@wordpress/components": "^28.4.0",
 		"@wordpress/dataviews": "^4.0.0",
 		"@wordpress/i18n": "^5.4.0",
@@ -21,6 +22,7 @@
 		"postcss": "^8.4.40",
 		"postcss-discard-duplicates": "^7.0.0",
 		"puppeteer": "^22.13.1",
+		"puppeteer-core": "^24.34.0",
 		"purgecss": "^6.0.0",
 		"react": "^18",
 		"react-dom": "^18"
