@@ -149,12 +149,11 @@ export default function Home() {
 			<header>
 				<div className="container">
 					<h1>Critical Path CSS Generator</h1>
-					<nav>
+					{/* <nav>
 						<a href="#">Home</a>
 						<a href="#">Articles</a>
 						<a href="#">Blog</a>
-						{/* Add more navigation links as needed */}
-					</nav>
+					</nav> */}
 				</div>
 			</header>
 

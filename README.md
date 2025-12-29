@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Critical CSS Generator
+
+A modern web application for analyzing and extracting critical CSS from any webpage. Optimize your website's performance by identifying and isolating above-the-fold styles for faster initial page loads.
+
+## What is Critical CSS?
+
+Critical CSS is the minimal set of styles required to render the above-the-fold content of a webpage. By inlining critical CSS and deferring the rest, you can significantly improve page load performance and Core Web Vitals scores.
+
+## Features
+
+- **URL Analysis** - Analyze any webpage by simply entering its URL
+- **Automatic CSS Extraction** - Automatically discovers and extracts all linked stylesheets
+- **Three CSS Variants**:
+  - **Combined & Minified CSS** - All stylesheets merged and optimized
+  - **Critical CSS** - Purged CSS containing only above-the-fold styles
+  - **Unminified CSS** - Raw combined output for debugging
+- **File Size Analysis** - See original vs. optimized file sizes with reduction percentages
+- **Download & Copy** - One-click download or copy to clipboard
+- **Modern UI** - Beautiful glassmorphic design with real-time feedback
+
+## Tech Stack
+
+- **Next.js 14** - React framework with API routes
+- **Puppeteer** - Headless browser automation for webpage analysis
+- **PostCSS** - CSS transformation pipeline
+- **PurgeCSS** - Removes unused CSS based on HTML content analysis
+- **CSSnano** - CSS minification and optimization
+- **WordPress Components** - Pre-built UI components
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ installed
+- npm, yarn, pnpm, or bun
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/henzlym/critical-css.git
+cd critical-css
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+3. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## How to Use
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Enter the URL of the webpage you want to analyze
+2. Click "Generate Critical CSS"
+3. Wait for the analysis to complete (the app will scrape the page and process all stylesheets)
+4. View the results:
+   - **Combined & Minified CSS** - All styles optimized for production
+   - **Critical CSS** - Only the essential above-the-fold styles
+5. Download or copy the CSS for use in your project
 
-## Learn More
+## How It Works
 
-To learn more about Next.js, take a look at the following resources:
+1. **Scraping** - Puppeteer loads the target webpage in a headless browser
+2. **Extraction** - All linked stylesheets are discovered and downloaded
+3. **Processing** - PostCSS pipeline processes the CSS:
+   - Autoprefixer adds vendor prefixes
+   - CSSnano minifies the output
+   - PurgeCSS analyzes the HTML to identify used styles
+4. **Generation** - Three variants are generated and displayed with file size comparisons
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```
+src/
+├── app/
+│   ├── page.js              # Main UI component
+│   ├── layout.js            # Root layout
+│   ├── globals.css          # Global styles and design system
+│   └── components/
+│       └── file-view.js     # Stylesheet metadata display
+└── pages/
+    └── api/
+        └── fetch-css.js     # CSS extraction API endpoint
+```
 
-## Deploy on Vercel
+## Use Cases
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Performance Optimization** - Reduce initial page load time
+- **Core Web Vitals** - Improve LCP and FCP metrics
+- **CSS Auditing** - Analyze stylesheet size and usage
+- **Development** - Identify unused CSS in your projects
+- **Learning** - Understand CSS optimization techniques
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Deployment
+
+### Deploy on Vercel
+
+The easiest way to deploy is using the [Vercel Platform](https://vercel.com/new):
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/critical-css)
+
+### Other Platforms
+
+This Next.js app can be deployed to any platform that supports Node.js:
+- Netlify
+- AWS Amplify
+- Railway
+- Render
+- Self-hosted with Node.js
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT License - feel free to use this project for personal or commercial purposes.
+
+## Acknowledgments
+
+Built with [Next.js](https://nextjs.org/) and powered by [Puppeteer](https://pptr.dev/) and [PurgeCSS](https://purgecss.com/).
+
+---
+
+**Note:** This tool analyzes publicly accessible webpages. Ensure you have permission to analyze any website you don't own.
