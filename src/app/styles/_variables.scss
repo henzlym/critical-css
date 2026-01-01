@@ -1,0 +1,60 @@
+// CSS Custom Properties (for runtime theming and reusability)
+:root {
+	// Ethereal Blues & Moonlit Greys
+	--ethereal-blue: #5e7ce2;
+	--moonlit-grey: #9ca8c4;
+	--deep-charcoal: #16171d;
+	--future-dust: #1e2130;
+
+	// Mocha Mousse - Pantone 2025
+	--mocha-mousse: #a47764;
+	--mocha-light: #c4a494;
+
+	// Accent Pops
+	--neon-accent: #ff6b35;
+	--chrome-purple: #a855f7;
+	--cyber-teal: #2dd4bf;
+
+	// Glass effects
+	--glass-bg: rgba(30, 33, 48, 0.6);
+	--glass-border: rgba(156, 168, 196, 0.15);
+	--glass-highlight: rgba(255, 255, 255, 0.05);
+
+	// Text
+	--text-primary: #f0f2f8;
+	--text-secondary: #9ca8c4;
+	--text-muted: #636b83;
+
+	// Functional
+	--radius: 16px;
+	--radius-sm: 10px;
+	--shadow-glow: 0 0 40px rgba(94, 124, 226, 0.15);
+	--transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// SCSS Variables (for computed values and mixins)
+// These reference CSS custom properties where appropriate
+$ethereal-blue: var(--ethereal-blue);
+$moonlit-grey: var(--moonlit-grey);
+$deep-charcoal: var(--deep-charcoal);
+$future-dust: var(--future-dust);
+
+$mocha-mousse: var(--mocha-mousse);
+$mocha-light: var(--mocha-light);
+
+$neon-accent: var(--neon-accent);
+$chrome-purple: var(--chrome-purple);
+$cyber-teal: var(--cyber-teal);
+
+$glass-bg: var(--glass-bg);
+$glass-border: var(--glass-border);
+$glass-highlight: var(--glass-highlight);
+
+$text-primary: var(--text-primary);
+$text-secondary: var(--text-secondary);
+$text-muted: var(--text-muted);
+
+$radius: var(--radius);
+$radius-sm: var(--radius-sm);
+$shadow-glow: var(--shadow-glow);
+$transition: var(--transition);

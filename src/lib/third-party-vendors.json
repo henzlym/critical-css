@@ -1,0 +1,599 @@
+{
+  "analytics": {
+    "google-analytics.com": {
+      "name": "Google Analytics",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Web analytics and tracking"
+    },
+    "googletagmanager.com": {
+      "name": "Google Tag Manager",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Tag management system"
+    },
+    "segment.com": {
+      "name": "Segment",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Customer data platform"
+    },
+    "segment.io": {
+      "name": "Segment",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Customer data platform"
+    },
+    "mixpanel.com": {
+      "name": "Mixpanel",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Product analytics"
+    },
+    "hotjar.com": {
+      "name": "Hotjar",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Behavior analytics and feedback"
+    },
+    "static.hotjar.com": {
+      "name": "Hotjar",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Behavior analytics and feedback"
+    },
+    "connect.facebook.net": {
+      "name": "Facebook Pixel",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Facebook tracking pixel"
+    },
+    "amplitude.com": {
+      "name": "Amplitude",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Product analytics"
+    },
+    "heap.io": {
+      "name": "Heap Analytics",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Automatic event tracking"
+    },
+    "fullstory.com": {
+      "name": "FullStory",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Session replay and analytics"
+    },
+    "mouseflow.com": {
+      "name": "Mouseflow",
+      "criticality": "critical",
+      "loadStrategy": "async",
+      "description": "Session replay and heatmaps"
+    }
+  },
+  "advertising": {
+    "googlesyndication.com": {
+      "name": "Google AdSense",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Display advertising network"
+    },
+    "doubleclick.net": {
+      "name": "Google Ads",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Ad serving and tracking"
+    },
+    "adnxs.com": {
+      "name": "AppNexus",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Programmatic advertising"
+    },
+    "media.net": {
+      "name": "Media.net",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Contextual advertising"
+    },
+    "ads-twitter.com": {
+      "name": "Twitter Ads",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Twitter advertising platform"
+    },
+    "amazon-adsystem.com": {
+      "name": "Amazon Ads",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Amazon advertising"
+    }
+  },
+  "ab_testing": {
+    "optimizely.com": {
+      "name": "Optimizely",
+      "criticality": "critical",
+      "loadStrategy": "head-sync",
+      "description": "A/B testing and experimentation",
+      "note": "Must load early to prevent content flicker"
+    },
+    "vwo.com": {
+      "name": "VWO",
+      "criticality": "critical",
+      "loadStrategy": "head-sync",
+      "description": "Visual Website Optimizer",
+      "note": "Requires early load to avoid flicker"
+    },
+    "optimize.google.com": {
+      "name": "Google Optimize",
+      "criticality": "critical",
+      "loadStrategy": "head-sync",
+      "description": "Google A/B testing tool",
+      "note": "Anti-flicker snippet recommended"
+    }
+  },
+  "chat": {
+    "intercom.io": {
+      "name": "Intercom",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Customer messaging platform"
+    },
+    "widget.intercom.io": {
+      "name": "Intercom",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Customer messaging platform"
+    },
+    "drift.com": {
+      "name": "Drift",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Conversational marketing"
+    },
+    "js.driftt.com": {
+      "name": "Drift",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Conversational marketing"
+    },
+    "zendesk.com": {
+      "name": "Zendesk Chat",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Customer support chat"
+    },
+    "zdassets.com": {
+      "name": "Zendesk",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Customer support assets"
+    },
+    "livechatinc.com": {
+      "name": "LiveChat",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Live chat software"
+    },
+    "tawk.to": {
+      "name": "Tawk.to",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Free live chat"
+    },
+    "crisp.chat": {
+      "name": "Crisp",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Customer messaging"
+    }
+  },
+  "consent": {
+    "onetrust.com": {
+      "name": "OneTrust",
+      "criticality": "critical",
+      "loadStrategy": "head-sync",
+      "description": "Cookie consent management",
+      "note": "GDPR compliance requires early load"
+    },
+    "cookiebot.com": {
+      "name": "CookieBot",
+      "criticality": "critical",
+      "loadStrategy": "head-sync",
+      "description": "Cookie consent solution",
+      "note": "Must load before other scripts for compliance"
+    },
+    "consent.cookiebot.com": {
+      "name": "CookieBot",
+      "criticality": "critical",
+      "loadStrategy": "head-sync",
+      "description": "Cookie consent solution"
+    },
+    "cookiepro.com": {
+      "name": "CookiePro",
+      "criticality": "critical",
+      "loadStrategy": "head-sync",
+      "description": "Cookie consent platform"
+    },
+    "termly.io": {
+      "name": "Termly",
+      "criticality": "critical",
+      "loadStrategy": "head-sync",
+      "description": "Privacy consent management"
+    },
+    "iubenda.com": {
+      "name": "iubenda",
+      "criticality": "critical",
+      "loadStrategy": "head-sync",
+      "description": "Privacy and cookie policy"
+    }
+  },
+  "social": {
+    "platform.twitter.com": {
+      "name": "Twitter Widgets",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Twitter embed and share buttons"
+    },
+    "platform.linkedin.com": {
+      "name": "LinkedIn",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "LinkedIn share buttons"
+    },
+    "assets.pinterest.com": {
+      "name": "Pinterest",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Pinterest widgets"
+    },
+    "instagram.com": {
+      "name": "Instagram",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Instagram embeds"
+    },
+    "www.instagram.com": {
+      "name": "Instagram",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Instagram embeds"
+    },
+    "addthis.com": {
+      "name": "AddThis",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Social sharing buttons"
+    },
+    "sharethis.com": {
+      "name": "ShareThis",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Social sharing widget"
+    }
+  },
+  "cdn": {
+    "cdnjs.cloudflare.com": {
+      "name": "Cloudflare CDN",
+      "criticality": "varies",
+      "loadStrategy": "context-dependent",
+      "description": "JavaScript library CDN"
+    },
+    "code.jquery.com": {
+      "name": "jQuery CDN",
+      "criticality": "critical",
+      "loadStrategy": "head-defer",
+      "description": "jQuery library CDN"
+    },
+    "ajax.googleapis.com": {
+      "name": "Google CDN",
+      "criticality": "critical",
+      "loadStrategy": "head-defer",
+      "description": "Google hosted libraries"
+    },
+    "unpkg.com": {
+      "name": "unpkg",
+      "criticality": "varies",
+      "loadStrategy": "context-dependent",
+      "description": "NPM package CDN"
+    },
+    "jsdelivr.net": {
+      "name": "jsDelivr",
+      "criticality": "varies",
+      "loadStrategy": "context-dependent",
+      "description": "Open source CDN"
+    },
+    "maxcdn.bootstrapcdn.com": {
+      "name": "Bootstrap CDN",
+      "criticality": "critical",
+      "loadStrategy": "head-defer",
+      "description": "Bootstrap framework CDN"
+    },
+    "stackpath.bootstrapcdn.com": {
+      "name": "Bootstrap CDN",
+      "criticality": "critical",
+      "loadStrategy": "head-defer",
+      "description": "Bootstrap framework CDN"
+    }
+  },
+  "fonts": {
+    "fonts.googleapis.com": {
+      "name": "Google Fonts",
+      "criticality": "interactive",
+      "loadStrategy": "preload-or-async",
+      "description": "Web font service",
+      "note": "Consider font-display: swap"
+    },
+    "fonts.gstatic.com": {
+      "name": "Google Fonts",
+      "criticality": "interactive",
+      "loadStrategy": "preload-or-async",
+      "description": "Google Fonts assets"
+    },
+    "use.typekit.net": {
+      "name": "Adobe Fonts",
+      "criticality": "interactive",
+      "loadStrategy": "preload-or-async",
+      "description": "Adobe web fonts"
+    },
+    "fast.fonts.net": {
+      "name": "Fonts.com",
+      "criticality": "interactive",
+      "loadStrategy": "preload-or-async",
+      "description": "Web font service"
+    },
+    "cloud.typography.com": {
+      "name": "Cloud.typography",
+      "criticality": "interactive",
+      "loadStrategy": "preload-or-async",
+      "description": "Professional web fonts"
+    }
+  },
+  "maps": {
+    "maps.googleapis.com": {
+      "name": "Google Maps",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "Google Maps API"
+    },
+    "maps.google.com": {
+      "name": "Google Maps",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "Google Maps"
+    },
+    "api.mapbox.com": {
+      "name": "Mapbox",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "Mapbox mapping platform"
+    },
+    "leaflet.js": {
+      "name": "Leaflet",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "Interactive maps library"
+    }
+  },
+  "video": {
+    "youtube.com": {
+      "name": "YouTube",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "Video player embed"
+    },
+    "www.youtube.com": {
+      "name": "YouTube",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "Video player embed"
+    },
+    "player.vimeo.com": {
+      "name": "Vimeo",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "Video player"
+    },
+    "fast.wistia.com": {
+      "name": "Wistia",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "Video hosting platform"
+    },
+    "fast.wistia.net": {
+      "name": "Wistia",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "Video hosting platform"
+    },
+    "videojs.com": {
+      "name": "Video.js",
+      "criticality": "interactive",
+      "loadStrategy": "lazy-load",
+      "description": "HTML5 video player"
+    }
+  },
+  "payments": {
+    "js.stripe.com": {
+      "name": "Stripe.js",
+      "criticality": "critical",
+      "loadStrategy": "context-dependent",
+      "description": "Payment processing",
+      "note": "Only critical on checkout pages"
+    },
+    "paypal.com": {
+      "name": "PayPal",
+      "criticality": "critical",
+      "loadStrategy": "context-dependent",
+      "description": "Payment gateway"
+    },
+    "www.paypal.com": {
+      "name": "PayPal",
+      "criticality": "critical",
+      "loadStrategy": "context-dependent",
+      "description": "Payment gateway"
+    },
+    "square.com": {
+      "name": "Square",
+      "criticality": "critical",
+      "loadStrategy": "context-dependent",
+      "description": "Payment processing"
+    },
+    "braintreegateway.com": {
+      "name": "Braintree",
+      "criticality": "critical",
+      "loadStrategy": "context-dependent",
+      "description": "Payment platform"
+    }
+  },
+  "monitoring": {
+    "sentry.io": {
+      "name": "Sentry",
+      "criticality": "non-essential",
+      "loadStrategy": "defer",
+      "description": "Error tracking and monitoring"
+    },
+    "browser.sentry-cdn.com": {
+      "name": "Sentry",
+      "criticality": "non-essential",
+      "loadStrategy": "defer",
+      "description": "Error tracking CDN"
+    },
+    "newrelic.com": {
+      "name": "New Relic",
+      "criticality": "non-essential",
+      "loadStrategy": "defer",
+      "description": "Application performance monitoring"
+    },
+    "js-agent.newrelic.com": {
+      "name": "New Relic",
+      "criticality": "non-essential",
+      "loadStrategy": "defer",
+      "description": "Browser monitoring"
+    },
+    "datadoghq.com": {
+      "name": "Datadog",
+      "criticality": "non-essential",
+      "loadStrategy": "defer",
+      "description": "Monitoring and analytics"
+    },
+    "bugsnag.com": {
+      "name": "Bugsnag",
+      "criticality": "non-essential",
+      "loadStrategy": "defer",
+      "description": "Error monitoring"
+    },
+    "rollbar.com": {
+      "name": "Rollbar",
+      "criticality": "non-essential",
+      "loadStrategy": "defer",
+      "description": "Error tracking"
+    }
+  },
+  "crm": {
+    "hubspot.com": {
+      "name": "HubSpot",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Marketing and CRM platform"
+    },
+    "js.hs-scripts.com": {
+      "name": "HubSpot",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "HubSpot tracking code"
+    },
+    "marketo.com": {
+      "name": "Marketo",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Marketing automation"
+    },
+    "munchkin.marketo.net": {
+      "name": "Marketo",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Marketo tracking"
+    },
+    "salesforce.com": {
+      "name": "Salesforce",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "CRM platform"
+    },
+    "pardot.com": {
+      "name": "Pardot",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Marketing automation by Salesforce"
+    },
+    "pipedrive.com": {
+      "name": "Pipedrive",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Sales CRM"
+    }
+  },
+  "popups": {
+    "app.optimonk.com": {
+      "name": "OptiMonk",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Popup and exit-intent tool"
+    },
+    "load.sumo.com": {
+      "name": "Sumo",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Email capture popups"
+    },
+    "static.mailerlite.com": {
+      "name": "MailerLite",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Email marketing popups"
+    },
+    "privy.com": {
+      "name": "Privy",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Email capture and popups"
+    }
+  },
+  "email": {
+    "mailchimp.com": {
+      "name": "Mailchimp",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Email marketing forms"
+    },
+    "sendinblue.com": {
+      "name": "Sendinblue",
+      "criticality": "interactive",
+      "loadStrategy": "defer",
+      "description": "Email marketing platform"
+    },
+    "klaviyo.com": {
+      "name": "Klaviyo",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Email marketing for e-commerce"
+    }
+  },
+  "support": {
+    "helpscout.net": {
+      "name": "Help Scout",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Customer support platform"
+    },
+    "freshdesk.com": {
+      "name": "Freshdesk",
+      "criticality": "non-essential",
+      "loadStrategy": "lazy-load",
+      "description": "Help desk software"
+    }
+  }
+}
