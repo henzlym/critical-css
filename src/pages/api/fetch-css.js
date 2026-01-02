@@ -10,19 +10,103 @@ import {
 } from "../../lib/features/above-the-fold/index.js";
 
 // Conditionally import puppeteer based on environment
-// Use puppeteer-core with chromium for serverless (Vercel, AWS Lambda, etc.)
-// Use regular puppeteer for local development
 const isDev = process.env.NODE_ENV === "development";
 let puppeteer;
 let chromium;
 
 if (isDev) {
-	// Local development - use full puppeteer
 	puppeteer = (await import("puppeteer")).default;
 } else {
-	// Production (Vercel) - use puppeteer-core with serverless chromium
 	puppeteer = (await import("puppeteer-core")).default;
 	chromium = (await import("@sparticuz/chromium")).default;
+}
+
+/**
+ * Formats byte size to human-readable string
+ * @param {number} bytes - Size in bytes
+ * @returns {string} Formatted size (e.g., "122.3 KB")
+ */
+function formatSize(bytes) {
+	if (bytes >= 1024 * 1024) {
+		return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+	}
+	if (bytes >= 1024) {
+		return `${(bytes / 1024).toFixed(1)} KB`;
+	}
+	return `${bytes} B`;
+}
+
+/**
+ * Fetches a single stylesheet and returns its metadata
+ * @param {string} cssUrl - URL of the stylesheet
+ * @param {number} index - Index for ID assignment
+ * @returns {Promise<{content: string, metadata: Object}>}
+ */
+async function fetchStylesheet(cssUrl, index) {
+	const response = await fetch(cssUrl);
+	const content = await response.text();
+	const size = new TextEncoder().encode(content).length;
+
+	return {
+		content,
+		metadata: {
+			id: index + 1,
+			url: cssUrl,
+			filename: cssUrl.split("/").pop().split("?")[0] || "stylesheet.css",
+			size,
+			sizeFormatted: formatSize(size),
+		},
+	};
+}
+
+/**
+ * Processes CSS through PostCSS pipeline (autoprefixer + cssnano)
+ * @param {string} css - Raw CSS string
+ * @returns {Promise<string>} Processed CSS
+ */
+async function processCss(css) {
+	const result = await postcss([autoprefixer(), cssnano()]).process(css, {
+		from: undefined,
+	});
+	return result.css;
+}
+
+/**
+ * Generates critical CSS by purging unused selectors
+ * @param {string} css - Combined CSS
+ * @param {string} html - HTML content to match against
+ * @returns {Promise<string>} Purged and minified CSS
+ */
+async function generateCriticalCss(css, html) {
+	const purgecss = await new PurgeCSS().purge({
+		content: [{ raw: html, extension: "html" }],
+		css: [{ raw: css }],
+	});
+	return processCss(purgecss[0].css);
+}
+
+/**
+ * Gets browser launch options based on environment
+ * @returns {Promise<Object>} Puppeteer launch options
+ */
+async function getBrowserOptions() {
+	const baseArgs = [
+		"--no-sandbox",
+		"--disable-setuid-sandbox",
+		"--disable-dev-shm-usage",
+		"--disable-gpu",
+	];
+
+	if (isDev) {
+		return { args: baseArgs, headless: true };
+	}
+
+	return {
+		args: [...baseArgs, ...chromium.args],
+		headless: chromium.headless,
+		executablePath: await chromium.executablePath(),
+		ignoreHTTPSErrors: true,
+	};
 }
 
 /**
@@ -65,29 +149,13 @@ export default async function handler(req, res) {
 
 	let browser;
 	try {
-		// Configure browser options based on environment
-		const launchOptions = {
-			args: [
-				"--no-sandbox",
-				"--disable-setuid-sandbox",
-				"--disable-dev-shm-usage",
-				"--disable-gpu",
-				...(isDev ? [] : chromium.args),
-			],
-			headless: chromium?.headless ?? true,
-			...(isDev ? {} : {
-				executablePath: await chromium.executablePath(),
-				ignoreHTTPSErrors: true,
-			}),
-		};
-
+		const launchOptions = await getBrowserOptions();
 		browser = await puppeteer.launch(launchOptions);
 		const page = await browser.newPage();
 
-		// Set a reasonable timeout for navigation
 		await page.goto(url, {
 			waitUntil: "networkidle2",
-			timeout: 30000, // 30 seconds
+			timeout: 30000,
 		});
 
 		await page.setViewport({
@@ -95,15 +163,11 @@ export default async function handler(req, res) {
 			height: VIEWPORT_CONFIG.height,
 		});
 
-		// Get full page HTML
 		const fullHtmlContent = await page.content();
-
-		// Get above-the-fold HTML if mode is 'above-fold'
-		let htmlForPurge = fullHtmlContent;
-
-		if (mode === "above-fold") {
-			htmlForPurge = await captureAboveTheFoldHTML(page);
-		}
+		const htmlForPurge =
+			mode === "above-fold"
+				? await captureAboveTheFoldHTML(page)
+				: fullHtmlContent;
 
 		const cssLinks = await page.evaluate(() => {
 			return Array.from(
@@ -111,84 +175,31 @@ export default async function handler(req, res) {
 			).map((link) => link.href);
 		});
 
-		// Close browser early to free up memory
 		await browser.close();
-		browser = null; // Mark as closed
+		browser = null;
 
-		let combinedCss = "";
-		const stylesheets = [];
-
-		for (const cssUrl of cssLinks) {
-			const response = await fetch(cssUrl);
-			const cssContent = await response.text();
-			const size = new TextEncoder().encode(cssContent).length;
-
-			stylesheets.push({
-				id: stylesheets.length + 1,
-				url: cssUrl,
-				filename:
-					cssUrl.split("/").pop().split("?")[0] || "stylesheet.css",
-				size,
-				sizeFormatted:
-					size > 1024
-						? `${(size / 1024).toFixed(1)} KB`
-						: `${size} B`,
-			});
-
-			combinedCss += cssContent;
-		}
-
-		const combined = await postcss([autoprefixer(), cssnano()]).process(
-			combinedCss,
-			{
-				from: undefined,
-			}
+		// Fetch all stylesheets in parallel
+		const results = await Promise.all(
+			cssLinks.map((cssUrl, index) => fetchStylesheet(cssUrl, index))
 		);
 
-		const purgecss = await new PurgeCSS().purge({
-			content: [
-				{
-					raw: htmlForPurge,
-					extension: "html",
-				},
-			],
-			css: [
-				{
-					raw: combinedCss,
-				},
-			],
-		});
+		const stylesheets = results.map((r) => r.metadata);
+		const combinedCss = results.map((r) => r.content).join("");
 
-		const critical = await postcss([autoprefixer(), cssnano()]).process(
-			purgecss[0].css,
-			{
-				from: undefined,
-			}
-		);
+		// Process CSS variants in parallel
+		const [minifiedCss, criticalCss] = await Promise.all([
+			processCss(combinedCss),
+			generateCriticalCss(combinedCss, htmlForPurge),
+		]);
 
-		// Calculate sizes for comparison
 		const originalSize = new TextEncoder().encode(combinedCss).length;
-		const minifiedSize = new TextEncoder().encode(combined.css).length;
-		const criticalSize = new TextEncoder().encode(critical.css).length;
-
-		/**
-		 * Formats byte size to human-readable string
-		 * @param {number} bytes - Size in bytes
-		 * @returns {string} Formatted size (e.g., "122.3 KB")
-		 */
-		const formatSize = (bytes) => {
-			if (bytes >= 1024 * 1024) {
-				return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-			} else if (bytes >= 1024) {
-				return `${(bytes / 1024).toFixed(1)} KB`;
-			}
-			return `${bytes} B`;
-		};
+		const minifiedSize = new TextEncoder().encode(minifiedCss).length;
+		const criticalSize = new TextEncoder().encode(criticalCss).length;
 
 		res.status(200).json({
-			minified: combined.css,
+			minified: minifiedCss,
 			unminified: combinedCss,
-			critical: critical.css,
+			critical: criticalCss,
 			stylesheets,
 			mode,
 			sizes: {
@@ -214,7 +225,6 @@ export default async function handler(req, res) {
 			stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
 		});
 	} finally {
-		// Ensure browser is closed even if there's an error
 		if (browser) {
 			await browser.close();
 		}
