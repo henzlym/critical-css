@@ -3,6 +3,12 @@ import cssnano from "cssnano";
 import postcss from "postcss";
 import { PurgeCSS } from "purgecss";
 
+// Import feature modules
+import {
+	captureAboveTheFoldHTML,
+	VIEWPORT_CONFIG,
+} from "../../lib/features/above-the-fold/index.js";
+
 // Conditionally import puppeteer based on environment
 // Use puppeteer-core with chromium for serverless (Vercel, AWS Lambda, etc.)
 // Use regular puppeteer for local development
@@ -20,72 +26,6 @@ if (isDev) {
 }
 
 /**
- * Captures only the above-the-fold HTML content from a page.
- *
- * Recursively clones DOM elements that are visible within the viewport height (900px).
- * Useful for generating truly critical CSS that only includes styles needed for
- * initial page render without scrolling.
- *
- * @param {import('puppeteer').Page} page - Puppeteer page instance
- * @returns {Promise<string>} HTML string containing only above-the-fold content
- *
- * @description
- * This function:
- * 1. Sets viewport to 1280x900
- * 2. Traverses the DOM and clones only elements with top position < 900px
- * 3. Reconstructs a complete HTML document with doctype, head, and filtered body
- *
- * @note Currently commented out in handler but available for future critical CSS improvements
- */
-async function captureAboveTheFoldHTML(page) {
-	// Set viewport to capture above-the-fold content
-	await page.setViewport({ width: 1280, height: 900 });
-
-	// Get the above-the-fold HTML content
-	const aboveTheFoldHTML = await page.evaluate(() => {
-		function cloneAboveTheFold(element, maxHeight) {
-			if (element.nodeType !== Node.ELEMENT_NODE) {
-				return element.cloneNode(true);
-			}
-
-			const rect = element.getBoundingClientRect();
-			if (rect.top >= maxHeight) {
-				return null;
-			}
-
-			const clone = element.cloneNode(false);
-			for (const child of element.childNodes) {
-				const clonedChild = cloneAboveTheFold(child, maxHeight);
-				if (clonedChild) {
-					clone.appendChild(clonedChild);
-				}
-			}
-			return clone;
-		}
-
-		const maxHeight = 900;
-		const bodyClone = document.createElement("body");
-
-		for (const child of document.body.childNodes) {
-			const clonedChild = cloneAboveTheFold(child, maxHeight);
-			if (clonedChild) {
-				bodyClone.appendChild(clonedChild);
-			}
-		}
-
-		const doctype = new XMLSerializer().serializeToString(document.doctype);
-		const htmlClone = document.documentElement.cloneNode(false);
-		const headClone = document.head.cloneNode(true);
-		htmlClone.appendChild(headClone);
-		htmlClone.appendChild(bodyClone);
-
-		return `${doctype}\n${htmlClone.outerHTML}`;
-	});
-
-	return aboveTheFoldHTML;
-}
-
-/**
  * API Route Handler - Extract and process CSS from a URL
  *
  * Fetches a webpage using Puppeteer, extracts all linked stylesheets,
@@ -95,6 +35,7 @@ async function captureAboveTheFoldHTML(page) {
  * @param {import('next').NextApiResponse} res - Next.js API response
  *
  * @query {string} url - Target webpage URL to extract CSS from
+ * @query {string} [mode=full] - Extraction mode: 'full' or 'above-fold'
  *
  * @returns {Object} JSON response with CSS variants:
  * @returns {string} minified - All stylesheets combined and minified
@@ -110,9 +51,13 @@ async function captureAboveTheFoldHTML(page) {
  * @example
  * // GET /api/fetch-css?url=https://example.com
  * // Response: { minified: "...", unminified: "...", critical: "...", stylesheets: [...] }
+ *
+ * @example
+ * // GET /api/fetch-css?url=https://example.com&mode=above-fold
+ * // Response: Same as above, but critical CSS only includes above-the-fold styles
  */
 export default async function handler(req, res) {
-	const { url } = req.query;
+	const { url, mode = "full" } = req.query;
 
 	if (!url) {
 		return res.status(400).json({ error: "URL is required" });
@@ -145,11 +90,20 @@ export default async function handler(req, res) {
 			timeout: 30000, // 30 seconds
 		});
 
-		await page.setViewport({ width: 1280, height: 900 });
+		await page.setViewport({
+			width: VIEWPORT_CONFIG.width,
+			height: VIEWPORT_CONFIG.height,
+		});
 
-		const htmlContent = await page.content();
+		// Get full page HTML
+		const fullHtmlContent = await page.content();
 
-		// const aboveTheFoldHTML = await captureAboveTheFoldHTML(htmlContent);
+		// Get above-the-fold HTML if mode is 'above-fold'
+		let htmlForPurge = fullHtmlContent;
+
+		if (mode === "above-fold") {
+			htmlForPurge = await captureAboveTheFoldHTML(page);
+		}
 
 		const cssLinks = await page.evaluate(() => {
 			return Array.from(
@@ -194,7 +148,7 @@ export default async function handler(req, res) {
 		const purgecss = await new PurgeCSS().purge({
 			content: [
 				{
-					raw: htmlContent,
+					raw: htmlForPurge,
 					extension: "html",
 				},
 			],
@@ -236,6 +190,7 @@ export default async function handler(req, res) {
 			unminified: combinedCss,
 			critical: critical.css,
 			stylesheets,
+			mode,
 			sizes: {
 				original: originalSize,
 				originalFormatted: formatSize(originalSize),
