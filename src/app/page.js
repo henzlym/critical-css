@@ -90,6 +90,8 @@ export default function Home() {
 	const [copied, setCopied] = useState({ minified: false, critical: false });
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const [drawerType, setDrawerType] = useState("minified");
+	// Above-the-fold mode toggle
+	const [aboveFoldMode, setAboveFoldMode] = useState(false);
 	// Collapsible sections: Critical CSS open by default, Combined CSS collapsed
 	const [sectionsExpanded, setSectionsExpanded] = useState({
 		minified: false,
@@ -151,8 +153,9 @@ export default function Home() {
 		setMinified("");
 
 		try {
+			const mode = aboveFoldMode ? "above-fold" : "full";
 			const response = await fetch(
-				`/api/fetch-css?url=${encodeURIComponent(url)}`
+				`/api/fetch-css?url=${encodeURIComponent(url)}&mode=${mode}`
 			);
 			const data = await response.json();
 
@@ -182,6 +185,10 @@ export default function Home() {
 			<header>
 				<div className="container">
 					<h1>Critical Path CSS Generator</h1>
+					<nav>
+						<a href="/" className="active">Critical CSS</a>
+						<a href="/preload">Preload Tags</a>
+					</nav>
 				</div>
 			</header>
 
@@ -218,6 +225,22 @@ export default function Home() {
 										? "Fetching CSS..."
 										: "Generate CSS"}
 								</button>
+							</div>
+							<div className="form-options">
+								<label className="toggle-option">
+									<input
+										type="checkbox"
+										checked={aboveFoldMode}
+										onChange={(e) => setAboveFoldMode(e.target.checked)}
+									/>
+									<span className="toggle-slider"></span>
+									<span className="toggle-label">
+										Above-the-Fold Mode
+										<span className="toggle-hint">
+											Extract CSS only for visible viewport content
+										</span>
+									</span>
+								</label>
 							</div>
 						</form>
 					</section>
@@ -611,6 +634,7 @@ export default function Home() {
 							</div>
 						</section>
 					)}
+
 				</div>
 			</main>
 
