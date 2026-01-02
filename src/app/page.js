@@ -31,7 +31,7 @@ export default function Home() {
 	const [copied, setCopied] = useState({ minified: false, critical: false });
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const [drawerType, setDrawerType] = useState("minified");
-	const [aboveFoldMode, setAboveFoldMode] = useState(false);
+	const [aboveFoldMode, setAboveFoldMode] = useState(true);
 	const [sectionsExpanded, setSectionsExpanded] = useState({
 		minified: false,
 		critical: true,
@@ -239,7 +239,7 @@ export default function Home() {
 
 			<footer>
 				<div className="container">
-					<p>&copy; 2024 Your Company</p>
+					<p>&copy; 2025 Henzly Meghie</p>
 				</div>
 			</footer>
 
