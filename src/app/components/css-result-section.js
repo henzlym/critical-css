@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronIcon, DownloadIcon, CopyIcon, CheckIcon, HelpIcon, ErrorIcon } from "./icons";
+import {
+	CheckIcon,
+	ChevronIcon,
+	CopyIcon,
+	DownloadIcon,
+	ErrorIcon,
+	HelpIcon,
+} from "./icons";
 
 /**
  * Downloads CSS content as a .css file.
@@ -82,7 +89,9 @@ export default function CssResultSection({
 	return (
 		<section className="critical-css-results">
 			<div
-				className={`critical-css-result critical-css-${variant} ${isExpanded ? "expanded" : "collapsed"}`}
+				className={`critical-css-result critical-css-${variant} ${
+					isExpanded ? "expanded" : "collapsed"
+				}`}
 			>
 				<div
 					className="result-header collapsible-header"
@@ -94,7 +103,11 @@ export default function CssResultSection({
 				>
 					<div className="result-header-top">
 						<div className="result-title-row">
-							<span className={`collapse-icon ${isExpanded ? "expanded" : ""}`}>
+							<span
+								className={`collapse-icon ${
+									isExpanded ? "expanded" : ""
+								}`}
+							>
 								<ChevronIcon />
 							</span>
 							<h3>{title}</h3>
@@ -122,13 +135,18 @@ export default function CssResultSection({
 					<p className="result-description">{description}</p>
 				</div>
 
-				<div className={`collapsible-content ${isExpanded ? "expanded" : ""}`}>
+				<div
+					className={`collapsible-content ${
+						isExpanded ? "expanded" : ""
+					}`}
+				>
 					<div className="result-code-container">
 						<div className="result-code-header">
 							<span className="result-filename">{filename}</span>
 							{sizes && (
 								<span className="result-size-badge">
-									{sizes.originalFormatted} → {sizes.currentFormatted}
+									{sizes.originalFormatted} →{" "}
+									{sizes.currentFormatted}
 									<span className="size-reduction">
 										({sizes.reduction}% smaller)
 									</span>
@@ -156,7 +174,9 @@ export default function CssResultSection({
 							Download CSS
 						</button>
 						<button
-							className={`critical-css-result-action secondary${copyError ? " error" : ""}`}
+							className={`critical-css-result-action secondary${
+								copyError ? " error" : ""
+							}`}
 							type="button"
 							onClick={handleCopy}
 						>
