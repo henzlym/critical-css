@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronIcon, DownloadIcon, CopyIcon, CheckIcon, HelpIcon } from "./icons";
+import { useState } from "react";
+import { ChevronIcon, DownloadIcon, CopyIcon, CheckIcon, HelpIcon, ErrorIcon } from "./icons";
 
 /**
  * Downloads CSS content as a .css file.
@@ -59,6 +60,8 @@ export default function CssResultSection({
 	loading,
 	variant = "minified",
 }) {
+	const [copyError, setCopyError] = useState(false);
+
 	const handleDownload = () => {
 		downloadCSS(cssContent, filename);
 	};
@@ -66,9 +69,13 @@ export default function CssResultSection({
 	const handleCopy = async () => {
 		try {
 			await navigator.clipboard.writeText(cssContent);
+			setCopyError(false);
 			onCopy();
 		} catch (err) {
 			console.error("Failed to copy:", err);
+			setCopyError(true);
+			// Clear error state after 2 seconds
+			setTimeout(() => setCopyError(false), 2000);
 		}
 	};
 
@@ -129,10 +136,12 @@ export default function CssResultSection({
 							)}
 						</div>
 						<textarea
+							id={`css_${variant}_textarea`}
 							name={`css_${variant}`}
 							rows={10}
 							value={cssContent}
 							readOnly
+							aria-label={`${title} content`}
 						/>
 					</div>
 
@@ -147,11 +156,16 @@ export default function CssResultSection({
 							Download CSS
 						</button>
 						<button
-							className="critical-css-result-action secondary"
+							className={`critical-css-result-action secondary${copyError ? " error" : ""}`}
 							type="button"
 							onClick={handleCopy}
 						>
-							{copied ? (
+							{copyError ? (
+								<>
+									<ErrorIcon />
+									Copy Failed
+								</>
+							) : copied ? (
 								<>
 									<CheckIcon />
 									Copied!
