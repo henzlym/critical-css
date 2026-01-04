@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
 	CheckIcon,
 	ChevronIcon,
@@ -68,6 +68,16 @@ export default function CssResultSection({
 	variant = "minified",
 }) {
 	const [copyError, setCopyError] = useState(false);
+	const errorTimeoutRef = useRef(undefined);
+
+	// Cleanup timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (errorTimeoutRef.current) {
+				clearTimeout(errorTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	const handleDownload = () => {
 		downloadCSS(cssContent, filename);
@@ -81,8 +91,15 @@ export default function CssResultSection({
 		} catch (err) {
 			console.error("Failed to copy:", err);
 			setCopyError(true);
+			// Clear any existing timeout
+			if (errorTimeoutRef.current) {
+				clearTimeout(errorTimeoutRef.current);
+			}
 			// Clear error state after 2 seconds
-			setTimeout(() => setCopyError(false), 2000);
+			errorTimeoutRef.current = setTimeout(
+				() => setCopyError(false),
+				2000
+			);
 		}
 	};
 
