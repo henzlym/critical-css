@@ -148,7 +148,7 @@ export default function Home() {
 									htmlFor="url-input"
 									className="visually-hidden"
 								>
-									Enter the URL of the website to analyze
+									Website URL
 								</label>
 								<input
 									id="url-input"
