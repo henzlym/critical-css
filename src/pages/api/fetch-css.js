@@ -9,6 +9,9 @@ import {
 	VIEWPORT_CONFIG,
 } from "../../lib/features/above-the-fold/index.js";
 
+// Valid mode values for CSS extraction
+const VALID_MODES = ["full", "above-fold"];
+
 // Conditionally import puppeteer based on environment
 const isDev = process.env.NODE_ENV === "development";
 let puppeteer;
@@ -110,6 +113,33 @@ async function generateCriticalCss(css, html) {
 }
 
 /**
+ * Creates an empty CSS response when no stylesheets are found
+ * @param {string} mode - The mode used ('full' or 'above-fold')
+ * @param {string} [message] - Optional message to include
+ * @returns {Object} Empty CSS response object
+ */
+function createEmptyResponse(mode, message = "No stylesheets found on the page") {
+	return {
+		minified: "",
+		unminified: "",
+		critical: "",
+		stylesheets: [],
+		mode,
+		message,
+		sizes: {
+			original: 0,
+			originalFormatted: formatSize(0),
+			minified: 0,
+			minifiedFormatted: formatSize(0),
+			critical: 0,
+			criticalFormatted: formatSize(0),
+			minifiedReduction: 0,
+			criticalReduction: 0,
+		},
+	};
+}
+
+/**
  * Gets browser launch options based on environment
  * @returns {Promise<Object>} Puppeteer launch options
  */
@@ -175,6 +205,14 @@ export default async function handler(req, res) {
 		return res.status(400).json({ error: "URL is required" });
 	}
 
+	// Validate mode parameter
+	if (!VALID_MODES.includes(mode)) {
+		return res.status(400).json({
+			error: "Invalid mode parameter",
+			details: `Mode must be one of: ${VALID_MODES.join(", ")}`,
+		});
+	}
+
 	let browser;
 	try {
 		const launchOptions = await getBrowserOptions();
@@ -205,6 +243,11 @@ export default async function handler(req, res) {
 
 		await browser.close();
 		browser = undefined;
+
+		// Handle case where no stylesheets were found
+		if (cssLinks.length === 0) {
+			return res.status(200).json(createEmptyResponse(mode));
+		}
 
 		// Fetch all stylesheets in parallel, handling individual failures gracefully
 		const settledResults = await Promise.allSettled(

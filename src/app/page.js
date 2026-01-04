@@ -1,7 +1,7 @@
 "use client";
 
 import "@wordpress/components/build-style/style.css";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import CssResultSection from "./components/css-result-section";
 import InstructionsDrawer from "./components/instructions-drawer";
 
@@ -24,7 +24,7 @@ export default function Home() {
 		unminified: "",
 		critical: "",
 		stylesheets: [],
-		sizes: null,
+		sizes: undefined,
 	});
 
 	// UI state
@@ -36,6 +36,21 @@ export default function Home() {
 		minified: false,
 		critical: true,
 	});
+
+	// Ref to track copy timeout for cleanup
+	const copyTimeoutRef = useRef(undefined);
+
+	// Helper function to clear copy timeout
+	const clearCopyTimeout = useCallback(() => {
+		if (copyTimeoutRef.current) {
+			clearTimeout(copyTimeoutRef.current);
+		}
+	}, []);
+
+	// Cleanup timeout on unmount
+	useEffect(() => {
+		return () => clearCopyTimeout();
+	}, [clearCopyTimeout]);
 
 	const toggleSection = (section) => {
 		setSectionsExpanded((prev) => ({
@@ -51,7 +66,8 @@ export default function Home() {
 
 	const handleCopy = (type) => {
 		setCopied((prev) => ({ ...prev, [type]: true }));
-		setTimeout(() => {
+		clearCopyTimeout();
+		copyTimeoutRef.current = setTimeout(() => {
 			setCopied((prev) => ({ ...prev, [type]: false }));
 		}, 2000);
 	};
@@ -64,7 +80,7 @@ export default function Home() {
 			unminified: "",
 			critical: "",
 			stylesheets: [],
-			sizes: null,
+			sizes: undefined,
 		});
 
 		try {
@@ -80,7 +96,7 @@ export default function Home() {
 					unminified: data.unminified,
 					critical: data.critical,
 					stylesheets: data.stylesheets || [],
-					sizes: data.sizes || null,
+					sizes: data.sizes || undefined,
 				});
 			} else {
 				const errorMessage = `Error: ${data.error}\n\nDetails: ${
@@ -128,7 +144,14 @@ export default function Home() {
 							onSubmit={handleSubmit}
 						>
 							<div className="form-control">
+								<label
+									htmlFor="url-input"
+									className="visually-hidden"
+								>
+									Website URL
+								</label>
 								<input
+									id="url-input"
 									type="url"
 									value={url}
 									onChange={(e) => setUrl(e.target.value)}
@@ -145,18 +168,27 @@ export default function Home() {
 								</button>
 							</div>
 							<div className="form-options">
-								<label className="toggle-option">
+								<label
+									htmlFor="above-fold-mode"
+									className="toggle-option"
+								>
 									<input
+										id="above-fold-mode"
+										name="above-fold-mode"
 										type="checkbox"
 										checked={aboveFoldMode}
 										onChange={(e) =>
 											setAboveFoldMode(e.target.checked)
 										}
+										aria-describedby="above-fold-hint"
 									/>
 									<span className="toggle-slider"></span>
 									<span className="toggle-label">
 										Above-the-Fold Mode
-										<span className="toggle-hint">
+										<span
+											id="above-fold-hint"
+											className="toggle-hint"
+										>
 											Extract CSS only for visible
 											viewport content
 										</span>
@@ -192,7 +224,7 @@ export default function Home() {
 												sizes.minifiedFormatted,
 											reduction: sizes.minifiedReduction,
 									  }
-									: null
+									: undefined
 							}
 							isExpanded={sectionsExpanded.minified}
 							onToggle={() => toggleSection("minified")}
@@ -221,7 +253,7 @@ export default function Home() {
 												sizes.criticalFormatted,
 											reduction: sizes.criticalReduction,
 									  }
-									: null
+									: undefined
 							}
 							isExpanded={sectionsExpanded.critical}
 							onToggle={() => toggleSection("critical")}
