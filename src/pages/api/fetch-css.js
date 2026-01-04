@@ -37,6 +37,25 @@ function formatSize(bytes) {
 }
 
 /**
+ * Extracts a valid filename from a URL
+ * @param {string} cssUrl - URL of the stylesheet
+ * @returns {string} Valid filename or default
+ */
+function extractFilename(cssUrl) {
+	try {
+		const pathname = new URL(cssUrl).pathname;
+		const filename = pathname.split("/").pop()?.split("?")[0];
+		// Validate filename has content and proper extension
+		if (filename && filename.length > 0 && !filename.startsWith(".")) {
+			return filename;
+		}
+	} catch {
+		// URL parsing failed, fall through to default
+	}
+	return "stylesheet.css";
+}
+
+/**
  * Fetches a single stylesheet and returns its metadata
  * @param {string} cssUrl - URL of the stylesheet
  * @param {number} index - Index for ID assignment
@@ -44,6 +63,11 @@ function formatSize(bytes) {
  */
 async function fetchStylesheet(cssUrl, index) {
 	const response = await fetch(cssUrl);
+	if (!response.ok) {
+		throw new Error(
+			`Failed to fetch stylesheet: ${response.status} ${response.statusText}`
+		);
+	}
 	const content = await response.text();
 	const size = new TextEncoder().encode(content).length;
 
@@ -52,7 +76,7 @@ async function fetchStylesheet(cssUrl, index) {
 		metadata: {
 			id: index + 1,
 			url: cssUrl,
-			filename: cssUrl.split("/").pop().split("?")[0] || "stylesheet.css",
+			filename: extractFilename(cssUrl),
 			size,
 			sizeFormatted: formatSize(size),
 		},
@@ -99,6 +123,10 @@ async function getBrowserOptions() {
 
 	if (isDev) {
 		return { args: baseArgs, headless: true };
+	}
+
+	if (!chromium) {
+		throw new Error("Chromium module not loaded in production environment");
 	}
 
 	return {
@@ -166,7 +194,7 @@ export default async function handler(req, res) {
 		const fullHtmlContent = await page.content();
 		const htmlForPurge =
 			mode === "above-fold"
-				? await captureAboveTheFoldHTML(page)
+				? await captureAboveTheFoldHTML(page, { skipViewportSet: true })
 				: fullHtmlContent;
 
 		const cssLinks = await page.evaluate(() => {
@@ -176,12 +204,25 @@ export default async function handler(req, res) {
 		});
 
 		await browser.close();
-		browser = null;
+		browser = undefined;
 
-		// Fetch all stylesheets in parallel
-		const results = await Promise.all(
+		// Fetch all stylesheets in parallel, handling individual failures gracefully
+		const settledResults = await Promise.allSettled(
 			cssLinks.map((cssUrl, index) => fetchStylesheet(cssUrl, index))
 		);
+
+		// Filter successful results and log failures
+		const results = [];
+		for (const result of settledResults) {
+			if (result.status === "fulfilled") {
+				results.push(result.value);
+			} else {
+				console.warn(
+					"Failed to fetch stylesheet:",
+					result.reason?.message
+				);
+			}
+		}
 
 		const stylesheets = results.map((r) => r.metadata);
 		const combinedCss = results.map((r) => r.content).join("");
@@ -196,6 +237,16 @@ export default async function handler(req, res) {
 		const minifiedSize = new TextEncoder().encode(minifiedCss).length;
 		const criticalSize = new TextEncoder().encode(criticalCss).length;
 
+		// Calculate reductions, avoiding division by zero
+		const minifiedReduction =
+			originalSize > 0
+				? Math.round((1 - minifiedSize / originalSize) * 100)
+				: 0;
+		const criticalReduction =
+			originalSize > 0
+				? Math.round((1 - criticalSize / originalSize) * 100)
+				: 0;
+
 		res.status(200).json({
 			minified: minifiedCss,
 			unminified: combinedCss,
@@ -209,12 +260,8 @@ export default async function handler(req, res) {
 				minifiedFormatted: formatSize(minifiedSize),
 				critical: criticalSize,
 				criticalFormatted: formatSize(criticalSize),
-				minifiedReduction: Math.round(
-					(1 - minifiedSize / originalSize) * 100
-				),
-				criticalReduction: Math.round(
-					(1 - criticalSize / originalSize) * 100
-				),
+				minifiedReduction,
+				criticalReduction,
 			},
 		});
 	} catch (error) {
@@ -222,7 +269,10 @@ export default async function handler(req, res) {
 		res.status(500).json({
 			error: "Failed to process CSS",
 			details: error.message,
-			stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+			stack:
+				process.env.NODE_ENV === "development"
+					? error.stack
+					: undefined,
 		});
 	} finally {
 		if (browser) {
