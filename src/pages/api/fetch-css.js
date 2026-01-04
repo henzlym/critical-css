@@ -110,6 +110,33 @@ async function generateCriticalCss(css, html) {
 }
 
 /**
+ * Creates an empty CSS response when no stylesheets are found
+ * @param {string} mode - The mode used ('full' or 'above-fold')
+ * @param {string} [message] - Optional message to include
+ * @returns {Object} Empty CSS response object
+ */
+function createEmptyResponse(mode, message = "No stylesheets found on the page") {
+	return {
+		minified: "",
+		unminified: "",
+		critical: "",
+		stylesheets: [],
+		mode,
+		message,
+		sizes: {
+			original: 0,
+			originalFormatted: formatSize(0),
+			minified: 0,
+			minifiedFormatted: formatSize(0),
+			critical: 0,
+			criticalFormatted: formatSize(0),
+			minifiedReduction: 0,
+			criticalReduction: 0,
+		},
+	};
+}
+
+/**
  * Gets browser launch options based on environment
  * @returns {Promise<Object>} Puppeteer launch options
  */
@@ -217,24 +244,7 @@ export default async function handler(req, res) {
 
 		// Handle case where no stylesheets were found
 		if (cssLinks.length === 0) {
-			return res.status(200).json({
-				minified: "",
-				unminified: "",
-				critical: "",
-				stylesheets: [],
-				mode,
-				message: "No stylesheets found on the page",
-				sizes: {
-					original: 0,
-					originalFormatted: formatSize(0),
-					minified: 0,
-					minifiedFormatted: formatSize(0),
-					critical: 0,
-					criticalFormatted: formatSize(0),
-					minifiedReduction: 0,
-					criticalReduction: 0,
-				},
-			});
+			return res.status(200).json(createEmptyResponse(mode));
 		}
 
 		// Fetch all stylesheets in parallel, handling individual failures gracefully

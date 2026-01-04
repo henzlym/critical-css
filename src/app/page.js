@@ -40,13 +40,16 @@ export default function Home() {
 	// Ref to track copy timeout for cleanup
 	const copyTimeoutRef = useRef(undefined);
 
+	// Helper function to clear copy timeout
+	const clearCopyTimeout = () => {
+		if (copyTimeoutRef.current) {
+			clearTimeout(copyTimeoutRef.current);
+		}
+	};
+
 	// Cleanup timeout on unmount
 	useEffect(() => {
-		return () => {
-			if (copyTimeoutRef.current) {
-				clearTimeout(copyTimeoutRef.current);
-			}
-		};
+		return clearCopyTimeout;
 	}, []);
 
 	const toggleSection = (section) => {
@@ -63,10 +66,7 @@ export default function Home() {
 
 	const handleCopy = (type) => {
 		setCopied((prev) => ({ ...prev, [type]: true }));
-		// Clear any existing timeout
-		if (copyTimeoutRef.current) {
-			clearTimeout(copyTimeoutRef.current);
-		}
+		clearCopyTimeout();
 		copyTimeoutRef.current = setTimeout(() => {
 			setCopied((prev) => ({ ...prev, [type]: false }));
 		}, 2000);

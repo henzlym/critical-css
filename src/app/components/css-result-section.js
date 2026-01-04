@@ -70,13 +70,16 @@ export default function CssResultSection({
 	const [copyError, setCopyError] = useState(false);
 	const errorTimeoutRef = useRef(undefined);
 
+	// Helper function to clear error timeout
+	const clearErrorTimeout = () => {
+		if (errorTimeoutRef.current) {
+			clearTimeout(errorTimeoutRef.current);
+		}
+	};
+
 	// Cleanup timeout on unmount
 	useEffect(() => {
-		return () => {
-			if (errorTimeoutRef.current) {
-				clearTimeout(errorTimeoutRef.current);
-			}
-		};
+		return clearErrorTimeout;
 	}, []);
 
 	const handleDownload = () => {
@@ -91,10 +94,7 @@ export default function CssResultSection({
 		} catch (err) {
 			console.error("Failed to copy:", err);
 			setCopyError(true);
-			// Clear any existing timeout
-			if (errorTimeoutRef.current) {
-				clearTimeout(errorTimeoutRef.current);
-			}
+			clearErrorTimeout();
 			// Clear error state after 2 seconds
 			errorTimeoutRef.current = setTimeout(
 				() => setCopyError(false),
