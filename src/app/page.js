@@ -49,7 +49,7 @@ export default function Home() {
 
 	// Cleanup timeout on unmount
 	useEffect(() => {
-		return clearCopyTimeout;
+		return () => clearCopyTimeout();
 	}, []);
 
 	const toggleSection = (section) => {

@@ -79,7 +79,7 @@ export default function CssResultSection({
 
 	// Cleanup timeout on unmount
 	useEffect(() => {
-		return clearErrorTimeout;
+		return () => clearErrorTimeout();
 	}, []);
 
 	const handleDownload = () => {
