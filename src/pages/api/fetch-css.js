@@ -215,27 +215,6 @@ export default async function handler(req, res) {
 		await browser.close();
 		browser = undefined;
 
-		// Fetch all stylesheets in parallel, handling individual failures gracefully
-		const settledResults = await Promise.allSettled(
-			cssLinks.map((cssUrl, index) => fetchStylesheet(cssUrl, index))
-		);
-
-		// Filter successful results and log failures
-		const results = [];
-		for (const result of settledResults) {
-			if (result.status === "fulfilled") {
-				results.push(result.value);
-			} else {
-				console.warn(
-					"Failed to fetch stylesheet:",
-					result.reason?.message
-				);
-			}
-		}
-
-		const stylesheets = results.map((r) => r.metadata);
-		const combinedCss = results.map((r) => r.content).join("");
-
 		// Handle case where no stylesheets were found
 		if (cssLinks.length === 0) {
 			return res.status(200).json({
@@ -257,6 +236,27 @@ export default async function handler(req, res) {
 				},
 			});
 		}
+
+		// Fetch all stylesheets in parallel, handling individual failures gracefully
+		const settledResults = await Promise.allSettled(
+			cssLinks.map((cssUrl, index) => fetchStylesheet(cssUrl, index))
+		);
+
+		// Filter successful results and log failures
+		const results = [];
+		for (const result of settledResults) {
+			if (result.status === "fulfilled") {
+				results.push(result.value);
+			} else {
+				console.warn(
+					"Failed to fetch stylesheet:",
+					result.reason?.message
+				);
+			}
+		}
+
+		const stylesheets = results.map((r) => r.metadata);
+		const combinedCss = results.map((r) => r.content).join("");
 
 		// Process CSS variants in parallel
 		const [minifiedCss, criticalCss] = await Promise.all([
