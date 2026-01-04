@@ -4,6 +4,19 @@
 	margin: 0;
 }
 
+/* Accessibility utility for screen reader only content */
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
 :root {
 	/* Ethereal Blues & Moonlit Greys */
 	--ethereal-blue: #5e7ce2;
@@ -520,6 +533,17 @@ main {
 	background: rgba(255, 255, 255, 0.05);
 	border-color: var(--text-secondary);
 	color: var(--text-primary);
+}
+
+.critical-css-result-action.secondary.error {
+	background: rgba(239, 68, 68, 0.1);
+	border-color: rgba(239, 68, 68, 0.5);
+	color: #ef4444;
+}
+
+.critical-css-result-action.secondary.error:hover:not(:disabled) {
+	background: rgba(239, 68, 68, 0.15);
+	border-color: #ef4444;
 }
 
 .critical-css-result-action svg {
@@ -1175,4 +1199,82 @@ footer p {
 		margin-top: 0.25rem;
 	}
 
+}
+
+/* ============================================
+   FORM OPTIONS - TOGGLE SWITCHES
+   ============================================ */
+.form-options {
+	display: flex;
+	justify-content: center;
+	margin-top: 1.25rem;
+	gap: 1.5rem;
+	flex-wrap: wrap;
+}
+
+.toggle-option {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	cursor: pointer;
+	user-select: none;
+}
+
+.toggle-option input[type="checkbox"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.toggle-slider {
+	position: relative;
+	width: 44px;
+	height: 24px;
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--glass-border);
+	border-radius: 12px;
+	transition: var(--transition);
+	flex-shrink: 0;
+}
+
+.toggle-slider::before {
+	content: '';
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 18px;
+	height: 18px;
+	background: var(--text-secondary);
+	border-radius: 50%;
+	transition: var(--transition);
+}
+
+.toggle-option input[type="checkbox"]:checked + .toggle-slider {
+	background: linear-gradient(135deg, var(--ethereal-blue), var(--chrome-purple));
+	border-color: transparent;
+}
+
+.toggle-option input[type="checkbox"]:checked + .toggle-slider::before {
+	transform: translateX(20px);
+	background: white;
+}
+
+.toggle-option input[type="checkbox"]:focus + .toggle-slider {
+	box-shadow: 0 0 0 3px rgba(94, 124, 226, 0.2);
+}
+
+.toggle-label {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	color: var(--text-primary);
+}
+
+.toggle-hint {
+	font-size: 0.75rem;
+	font-weight: 400;
+	color: var(--text-muted);
 }
