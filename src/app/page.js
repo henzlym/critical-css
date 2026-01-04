@@ -1,7 +1,7 @@
 "use client";
 
 import "@wordpress/components/build-style/style.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import CssResultSection from "./components/css-result-section";
 import InstructionsDrawer from "./components/instructions-drawer";
 
@@ -41,16 +41,16 @@ export default function Home() {
 	const copyTimeoutRef = useRef(undefined);
 
 	// Helper function to clear copy timeout
-	const clearCopyTimeout = () => {
+	const clearCopyTimeout = useCallback(() => {
 		if (copyTimeoutRef.current) {
 			clearTimeout(copyTimeoutRef.current);
 		}
-	};
+	}, []);
 
 	// Cleanup timeout on unmount
 	useEffect(() => {
 		return () => clearCopyTimeout();
-	}, []);
+	}, [clearCopyTimeout]);
 
 	const toggleSection = (section) => {
 		setSectionsExpanded((prev) => ({

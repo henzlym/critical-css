@@ -9,6 +9,9 @@ import {
 	VIEWPORT_CONFIG,
 } from "../../lib/features/above-the-fold/index.js";
 
+// Valid mode values for CSS extraction
+const VALID_MODES = ["full", "above-fold"];
+
 // Conditionally import puppeteer based on environment
 const isDev = process.env.NODE_ENV === "development";
 let puppeteer;
@@ -203,11 +206,10 @@ export default async function handler(req, res) {
 	}
 
 	// Validate mode parameter
-	if (mode !== "full" && mode !== "above-fold") {
+	if (!VALID_MODES.includes(mode)) {
 		return res.status(400).json({
 			error: "Invalid mode parameter",
-			details:
-				'Mode must be either "full" or "above-fold"',
+			details: `Mode must be one of: ${VALID_MODES.join(", ")}`,
 		});
 	}
 

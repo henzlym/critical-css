@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
 	CheckIcon,
 	ChevronIcon,
@@ -71,16 +71,16 @@ export default function CssResultSection({
 	const errorTimeoutRef = useRef(undefined);
 
 	// Helper function to clear error timeout
-	const clearErrorTimeout = () => {
+	const clearErrorTimeout = useCallback(() => {
 		if (errorTimeoutRef.current) {
 			clearTimeout(errorTimeoutRef.current);
 		}
-	};
+	}, []);
 
 	// Cleanup timeout on unmount
 	useEffect(() => {
 		return () => clearErrorTimeout();
-	}, []);
+	}, [clearErrorTimeout]);
 
 	const handleDownload = () => {
 		downloadCSS(cssContent, filename);
