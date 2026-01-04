@@ -148,7 +148,7 @@ export default function Home() {
 									htmlFor="url-input"
 									className="visually-hidden"
 								>
-									Website URL
+									Enter the URL of the website to analyze
 								</label>
 								<input
 									id="url-input"
@@ -157,7 +157,6 @@ export default function Home() {
 									onChange={(e) => setUrl(e.target.value)}
 									placeholder="https://example.com"
 									required
-									aria-label="Enter the URL of the website to analyze"
 								/>
 								<button
 									type="submit"
