@@ -4,6 +4,19 @@
 	margin: 0;
 }
 
+/* Accessibility utility for screen reader only content */
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
 :root {
 	/* Ethereal Blues & Moonlit Greys */
 	--ethereal-blue: #5e7ce2;
@@ -528,6 +541,17 @@ main {
 	background: rgba(255, 255, 255, 0.05);
 	border-color: var(--text-secondary);
 	color: var(--text-primary);
+}
+
+.critical-css-result-action.secondary.error {
+	background: rgba(239, 68, 68, 0.1);
+	border-color: rgba(239, 68, 68, 0.5);
+	color: #ef4444;
+}
+
+.critical-css-result-action.secondary.error:hover:not(:disabled) {
+	background: rgba(239, 68, 68, 0.15);
+	border-color: #ef4444;
 }
 
 .critical-css-result-action svg {

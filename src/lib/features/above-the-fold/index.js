@@ -26,6 +26,7 @@ export const VIEWPORT_CONFIG = {
  * @param {Object} options - Configuration options
  * @param {number} [options.viewportHeight=900] - Height threshold for above-the-fold
  * @param {number} [options.viewportWidth=1280] - Viewport width to use
+ * @param {boolean} [options.skipViewportSet=false] - Skip setting viewport if already configured
  * @returns {Promise<string>} HTML string containing only above-the-fold content
  *
  * @example
@@ -37,10 +38,16 @@ export async function captureAboveTheFoldHTML(page, options = {}) {
 	const {
 		viewportHeight = VIEWPORT_CONFIG.height,
 		viewportWidth = VIEWPORT_CONFIG.width,
+		skipViewportSet = false,
 	} = options;
 
-	// Set viewport to capture above-the-fold content
-	await page.setViewport({ width: viewportWidth, height: viewportHeight });
+	// Set viewport to capture above-the-fold content (skip if already configured by caller)
+	if (!skipViewportSet) {
+		await page.setViewport({
+			width: viewportWidth,
+			height: viewportHeight,
+		});
+	}
 
 	// Get the above-the-fold HTML content
 	const aboveTheFoldHTML = await page.evaluate((maxHeight) => {
@@ -124,7 +131,10 @@ export async function getAboveTheFoldSelectors(page, options = {}) {
 				return `#${element.id}`;
 			}
 			if (element.className && typeof element.className === "string") {
-				const classes = element.className.trim().split(/\s+/).filter(Boolean);
+			const classes = element.className
+				.trim()
+				.split(/\s+/)
+				.filter(Boolean);
 				if (classes.length > 0) {
 					return `.${classes.join(".")}`;
 				}
