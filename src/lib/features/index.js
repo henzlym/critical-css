@@ -14,10 +14,10 @@ export {
 
 export {
 	extractPreloadableResources,
+	generateAllPreloadTags,
+	generateDnsPrefetch,
 	generateFontPreloads,
 	generateImagePreloads,
-	generateDnsPrefetch,
 	generatePreconnect,
-	generateAllPreloadTags,
 	PRELOAD_TYPES,
 } from "./preload-generator/index.js";

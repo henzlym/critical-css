@@ -64,8 +64,14 @@ export default function PreloadPage() {
 		}
 	};
 
-	const { stats, html, fontPreloads, imagePreloads, dnsPrefetch, preconnect } =
-		preloadTags || {};
+	const {
+		stats,
+		html,
+		fontPreloads,
+		imagePreloads,
+		dnsPrefetch,
+		preconnect,
+	} = preloadTags || {};
 
 	const totalTags =
 		(stats?.fontsPreloaded || 0) +
@@ -80,7 +86,12 @@ export default function PreloadPage() {
 					<h1>Preload Tag Generator</h1>
 					<nav>
 						<a href="/">Critical CSS</a>
-						<a href="/preload" className="active">Preload Tags</a>
+						<a
+							href="/preload"
+							className="active"
+						>
+							Preload Tags
+						</a>
 					</nav>
 				</div>
 			</header>
@@ -90,11 +101,15 @@ export default function PreloadPage() {
 					<section className="hero">
 						<h2>Generate Preload & Prefetch Tags</h2>
 						<p className="hero-description">
-							Analyze any webpage to generate optimized preconnect, dns-prefetch,
-							and preload hints. Speed up resource loading by telling browsers
-							what to fetch ahead of time.
+							Analyze any webpage to generate optimized
+							preconnect, dns-prefetch, and preload hints. Speed
+							up resource loading by telling browsers what to
+							fetch ahead of time.
 						</p>
-						<form className="form" onSubmit={handleSubmit}>
+						<form
+							className="form"
+							onSubmit={handleSubmit}
+						>
 							<div className="form-control">
 								<input
 									type="url"
@@ -103,7 +118,10 @@ export default function PreloadPage() {
 									placeholder="https://example.com"
 									required
 								/>
-								<button type="submit" disabled={loading}>
+								<button
+									type="submit"
+									disabled={loading}
+								>
 									{loading ? "Analyzing..." : "Generate Tags"}
 								</button>
 							</div>
@@ -116,7 +134,9 @@ export default function PreloadPage() {
 							<div className="loader-orb">
 								<div className="loader-orb-inner"></div>
 							</div>
-							<p className="loader-text">Analyzing page resources...</p>
+							<p className="loader-text">
+								Analyzing page resources...
+							</p>
 						</div>
 					)}
 
@@ -126,7 +146,9 @@ export default function PreloadPage() {
 							<div className="critical-css-result error-result">
 								<div className="result-header">
 									<h3>Error</h3>
-									<p className="result-description">{error}</p>
+									<p className="result-description">
+										{error}
+									</p>
 								</div>
 							</div>
 						</section>
@@ -144,7 +166,9 @@ export default function PreloadPage() {
 											<span className="preload-stat-value">
 												{stats.domainsPreconnected}
 											</span>
-											<span className="preload-stat-label">Preconnect</span>
+											<span className="preload-stat-label">
+												Preconnect
+											</span>
 											<span className="preload-stat-desc">
 												Critical external domains
 											</span>
@@ -155,7 +179,9 @@ export default function PreloadPage() {
 											<span className="preload-stat-value">
 												{stats.domainsPrefetched}
 											</span>
-											<span className="preload-stat-label">DNS Prefetch</span>
+											<span className="preload-stat-label">
+												DNS Prefetch
+											</span>
 											<span className="preload-stat-desc">
 												Domain name lookups
 											</span>
@@ -166,7 +192,9 @@ export default function PreloadPage() {
 											<span className="preload-stat-value">
 												{stats.fontsPreloaded}
 											</span>
-											<span className="preload-stat-label">Fonts</span>
+											<span className="preload-stat-label">
+												Fonts
+											</span>
 											<span className="preload-stat-desc">
 												Web fonts to preload
 											</span>
@@ -177,7 +205,9 @@ export default function PreloadPage() {
 											<span className="preload-stat-value">
 												{stats.imagesPreloaded}
 											</span>
-											<span className="preload-stat-label">Images</span>
+											<span className="preload-stat-label">
+												Images
+											</span>
 											<span className="preload-stat-desc">
 												Above-the-fold images
 											</span>
@@ -199,14 +229,17 @@ export default function PreloadPage() {
 											</div>
 										</div>
 										<p className="result-description">
-											Copy and paste these tags into your HTML {"<head>"} section
-											for optimal loading performance.
+											Copy and paste these tags into your
+											HTML {"<head>"} section for optimal
+											loading performance.
 										</p>
 									</div>
 
 									<div className="result-code-container">
 										<div className="result-code-header">
-											<span className="result-filename">preload-tags.html</span>
+											<span className="result-filename">
+												preload-tags.html
+											</span>
 										</div>
 										<textarea
 											id="all_preload_tags"
@@ -220,7 +253,12 @@ export default function PreloadPage() {
 										<button
 											className="critical-css-result-action"
 											type="button"
-											onClick={() => downloadFile(html, "preload-tags.html")}
+											onClick={() =>
+												downloadFile(
+													html,
+													"preload-tags.html"
+												)
+											}
 										>
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
@@ -235,14 +273,21 @@ export default function PreloadPage() {
 											>
 												<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
 												<polyline points="7 10 12 15 17 10" />
-												<line x1="12" y1="15" x2="12" y2="3" />
+												<line
+													x1="12"
+													y1="15"
+													x2="12"
+													y2="3"
+												/>
 											</svg>
 											Download
 										</button>
 										<button
 											className="critical-css-result-action secondary"
 											type="button"
-											onClick={() => copyToClipboard(html)}
+											onClick={() =>
+												copyToClipboard(html)
+											}
 										>
 											{copied ? (
 												<>
@@ -274,7 +319,14 @@ export default function PreloadPage() {
 														strokeLinecap="round"
 														strokeLinejoin="round"
 													>
-														<rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+														<rect
+															x="9"
+															y="9"
+															width="13"
+															height="13"
+															rx="2"
+															ry="2"
+														/>
 														<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
 													</svg>
 													Copy All
@@ -292,19 +344,26 @@ export default function PreloadPage() {
 										<div className="result-header">
 											<h3>Preconnect Tags</h3>
 											<p className="result-description">
-												Establishes early connections to important third-party origins.
-												This includes DNS lookup, TCP handshake, and TLS negotiation.
+												Establishes early connections to
+												important third-party origins.
+												This includes DNS lookup, TCP
+												handshake, and TLS negotiation.
 											</p>
 										</div>
 										<div className="result-code-container">
 											<div className="result-code-header">
-												<span className="result-filename">preconnect.html</span>
+												<span className="result-filename">
+													preconnect.html
+												</span>
 												<span className="result-size-badge">
 													{preconnect.length} domains
 												</span>
 											</div>
 											<textarea
-												rows={Math.min(8, preconnect.length + 1)}
+												rows={Math.min(
+													8,
+													preconnect.length + 1
+												)}
 												value={preconnect.join("\n")}
 												readOnly
 											/>
@@ -319,19 +378,26 @@ export default function PreloadPage() {
 										<div className="result-header">
 											<h3>DNS Prefetch Tags</h3>
 											<p className="result-description">
-												Resolves domain names ahead of time. Lighter than preconnect,
-												useful for domains you might need later.
+												Resolves domain names ahead of
+												time. Lighter than preconnect,
+												useful for domains you might
+												need later.
 											</p>
 										</div>
 										<div className="result-code-container">
 											<div className="result-code-header">
-												<span className="result-filename">dns-prefetch.html</span>
+												<span className="result-filename">
+													dns-prefetch.html
+												</span>
 												<span className="result-size-badge">
 													{dnsPrefetch.length} domains
 												</span>
 											</div>
 											<textarea
-												rows={Math.min(8, dnsPrefetch.length + 1)}
+												rows={Math.min(
+													8,
+													dnsPrefetch.length + 1
+												)}
 												value={dnsPrefetch.join("\n")}
 												readOnly
 											/>
@@ -346,19 +412,26 @@ export default function PreloadPage() {
 										<div className="result-header">
 											<h3>Font Preloads</h3>
 											<p className="result-description">
-												Preload web fonts to prevent Flash of Unstyled Text (FOUT).
-												Browsers will fetch these with high priority.
+												Preload web fonts to prevent
+												Flash of Unstyled Text (FOUT).
+												Browsers will fetch these with
+												high priority.
 											</p>
 										</div>
 										<div className="result-code-container">
 											<div className="result-code-header">
-												<span className="result-filename">font-preloads.html</span>
+												<span className="result-filename">
+													font-preloads.html
+												</span>
 												<span className="result-size-badge">
 													{fontPreloads.length} fonts
 												</span>
 											</div>
 											<textarea
-												rows={Math.min(8, fontPreloads.length + 1)}
+												rows={Math.min(
+													8,
+													fontPreloads.length + 1
+												)}
 												value={fontPreloads.join("\n")}
 												readOnly
 											/>
@@ -373,19 +446,27 @@ export default function PreloadPage() {
 										<div className="result-header">
 											<h3>Image Preloads</h3>
 											<p className="result-description">
-												Above-the-fold images that should be loaded with high priority
-												for faster Largest Contentful Paint (LCP).
+												Above-the-fold images that
+												should be loaded with high
+												priority for faster Largest
+												Contentful Paint (LCP).
 											</p>
 										</div>
 										<div className="result-code-container">
 											<div className="result-code-header">
-												<span className="result-filename">image-preloads.html</span>
+												<span className="result-filename">
+													image-preloads.html
+												</span>
 												<span className="result-size-badge">
-													{imagePreloads.length} images
+													{imagePreloads.length}{" "}
+													images
 												</span>
 											</div>
 											<textarea
-												rows={Math.min(8, imagePreloads.length + 1)}
+												rows={Math.min(
+													8,
+													imagePreloads.length + 1
+												)}
 												value={imagePreloads.join("\n")}
 												readOnly
 											/>
@@ -399,27 +480,36 @@ export default function PreloadPage() {
 								<h3>How to Use These Tags</h3>
 								<div className="instruction-cards">
 									<div className="instruction-card">
-										<div className="instruction-card-number">1</div>
+										<div className="instruction-card-number">
+											1
+										</div>
 										<h4>Copy the tags</h4>
 										<p>
-											Use the &quot;Copy All&quot; button above to copy all generated tags
-											to your clipboard.
+											Use the &quot;Copy All&quot; button
+											above to copy all generated tags to
+											your clipboard.
 										</p>
 									</div>
 									<div className="instruction-card">
-										<div className="instruction-card-number">2</div>
+										<div className="instruction-card-number">
+											2
+										</div>
 										<h4>Paste in {"<head>"}</h4>
 										<p>
-											Add the tags to your HTML {"<head>"} section, ideally near
-											the top before other resources.
+											Add the tags to your HTML {"<head>"}{" "}
+											section, ideally near the top before
+											other resources.
 										</p>
 									</div>
 									<div className="instruction-card">
-										<div className="instruction-card-number">3</div>
+										<div className="instruction-card-number">
+											3
+										</div>
 										<h4>Test performance</h4>
 										<p>
-											Use Chrome DevTools or PageSpeed Insights to verify
-											improved loading times.
+											Use Chrome DevTools or PageSpeed
+											Insights to verify improved loading
+											times.
 										</p>
 									</div>
 								</div>
@@ -434,9 +524,11 @@ export default function PreloadPage() {
 								<div className="result-header">
 									<h3>No Preloadable Resources Found</h3>
 									<p className="result-description">
-										The page doesn&apos;t have any external resources that would benefit
-										from preloading. This could mean the page is already well-optimized
-										or uses inline resources.
+										The page doesn&apos;t have any external
+										resources that would benefit from
+										preloading. This could mean the page is
+										already well-optimized or uses inline
+										resources.
 									</p>
 								</div>
 							</div>

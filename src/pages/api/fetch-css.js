@@ -122,7 +122,10 @@ async function generateCriticalCss(css, html) {
  * @param {string} [message] - Optional message to include
  * @returns {Object} Empty CSS response object
  */
-function createEmptyResponse(mode, message = "No stylesheets found on the page") {
+function createEmptyResponse(
+	mode,
+	message = "No stylesheets found on the page"
+) {
 	return {
 		minified: "",
 		unminified: "",

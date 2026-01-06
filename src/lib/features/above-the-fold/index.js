@@ -131,10 +131,10 @@ export async function getAboveTheFoldSelectors(page, options = {}) {
 				return `#${element.id}`;
 			}
 			if (element.className && typeof element.className === "string") {
-			const classes = element.className
-				.trim()
-				.split(/\s+/)
-				.filter(Boolean);
+				const classes = element.className
+					.trim()
+					.split(/\s+/)
+					.filter(Boolean);
 				if (classes.length > 0) {
 					return `.${classes.join(".")}`;
 				}
