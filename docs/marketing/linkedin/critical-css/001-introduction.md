@@ -1,65 +1,59 @@
 # Critical CSS Generator - Introduction Post
 
-**Status:** Draft  
-**Feature:** Critical CSS  
-**Post Type:** Introduction / Launch  
-**Target Audience:** Frontend developers, performance engineers  
+**Status:** Draft
+**Feature:** Critical CSS
+**Post Type:** Introduction / Launch
+**Target Audience:** Frontend developers, performance engineers
 
 ---
 
 ## Post
 
-I've been obsessing over a PageSpeed warning for months.
+I've been working on a side project lately.
 
-"Eliminate render-blocking resources."
+**Speedkit** is my attempt at creating a web performance toolkit. The first feature I'm shipping: a Critical CSS Generator.
 
-You know the one. It haunts every audit.
+The idea is simple:
+→ Enter any URL
+→ The tool renders the page in a headless browser
+→ Extracts only the CSS needed for above-the-fold content
+→ Gives you optimized files ready to use
 
-The fix sounds simple: extract critical CSS, inline it, defer the rest. In practice? You're hunting through 15,000 lines of CSS trying to figure out which 200 actually matter for above-the-fold.
+I've been learning a ton building this — Puppeteer quirks, how PurgeCSS decides what to keep, the surprising complexity of defining "above the fold" when you account for different viewports and dynamic content.
 
-I got tired of doing this manually. So I built a thing.
+It's still early, and I'm sure there are edge cases I haven't hit yet. That's part of the fun.
 
-**Speedkit** — starting with a Critical CSS Generator.
+If you're curious, the link's in the comments. I'd love to hear:
+- What breaks it
+- How you currently handle critical CSS
+- What other performance tools you wish existed
 
-How it works:
-→ Puppeteer renders your page in a headless browser
-→ Captures only what's visible in the viewport
-→ PurgeCSS strips everything else
-→ PostCSS handles the minification
-
-The results have been wild. I'm seeing 70-90% reductions on most sites. One WordPress theme went from 847KB of CSS to 12KB critical.
-
-Still tinkering with the viewport detection logic — turns out "above the fold" is surprisingly hard to define when you account for lazy-loaded images and dynamic content.
-
-If you're fighting the same PageSpeed battles, link's in comments. Would love feedback from anyone who's tackled this problem differently.
-
-What's your current approach to critical CSS?
-
-#WebPerformance #CSS #JavaScript #WebDev #CoreWebVitals #OpenSource
+#WebPerformance #CSS #WebDev #NextJS #JavaScript #OpenSource
 
 ---
 
 ## Comment (post immediately after)
 
-🔗 Try Speedkit: [YOUR_URL]
+🔗 Try Speedkit: https://speedkit.henzlymeghie.com
 
 Built with Next.js 14, Puppeteer, PostCSS, and PurgeCSS.
 
-Source code: [GITHUB_URL]
+Would love your feedback — what works, what doesn't, what would make it more useful?
 
 ---
 
 ## Notes
 
-- Emphasizes the tinkering/experimentation angle
-- Asks for feedback to encourage engagement
-- Mentions specific tech for credibility
-- Real numbers (847KB → 12KB) add weight
-- Acknowledges it's a work in progress
+- Removed specific metrics (847KB → 12KB) since not fully tested
+- Shifted tone to "having fun" and "learning"
+- Frames as first feature of a toolkit (not a finished product)
+- Explicitly asks for feedback and edge cases
+- Acknowledges it's early/experimental
+- "Building in public = learning in public" reinforces the journey
 
 ## Follow-up Post Ideas
 
 - [ ] Deep dive on viewport detection challenges
-- [ ] Before/after case study with real metrics
-- [ ] How PurgeCSS works under the hood
-- [ ] Handling dynamic/JS-rendered content
+- [ ] "Here's what broke" — sharing edge cases people found
+- [ ] Lessons learned from building with Puppeteer
+- [ ] What's next for Speedkit (roadmap teaser)
