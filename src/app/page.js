@@ -25,7 +25,11 @@ export default function Home() {
 		critical: "",
 		stylesheets: [],
 		sizes: undefined,
+		message: "",
 	});
+
+	// Track if a request has been completed (to show "no results" message)
+	const [hasSearched, setHasSearched] = useState(false);
 
 	// UI state
 	const [copied, setCopied] = useState({ minified: false, critical: false });
@@ -76,12 +80,14 @@ export default function Home() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setLoading(true);
+		setHasSearched(false);
 		setCssData({
 			minified: "",
 			unminified: "",
 			critical: "",
 			stylesheets: [],
 			sizes: undefined,
+			message: "",
 		});
 
 		try {
@@ -98,6 +104,7 @@ export default function Home() {
 					critical: data.critical,
 					stylesheets: data.stylesheets || [],
 					sizes: data.sizes || undefined,
+					message: data.message || "",
 				});
 			} else {
 				const errorMessage = `Error: ${data.error}\n\nDetails: ${
@@ -118,10 +125,15 @@ export default function Home() {
 			}));
 		} finally {
 			setLoading(false);
+			setHasSearched(true);
 		}
 	};
 
-	const { minified, critical, sizes } = cssData;
+	const { minified, critical, sizes, message } = cssData;
+
+	// Determine if we should show the "no stylesheets" message
+	const showNoStylesheetsMessage =
+		hasSearched && !loading && !minified && !critical && message;
 
 	return (
 		<div>
@@ -217,6 +229,38 @@ export default function Home() {
 								Analyzing stylesheets...
 							</p>
 						</div>
+					)}
+
+					{showNoStylesheetsMessage && (
+						<section className="no-stylesheets-message">
+							<div className="message-icon">
+								<svg
+									width="48"
+									height="48"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								>
+									<circle cx="12" cy="12" r="10" />
+									<line x1="12" y1="8" x2="12" y2="12" />
+									<line x1="12" y1="16" x2="12.01" y2="16" />
+								</svg>
+							</div>
+							<h3>No External Stylesheets Found</h3>
+							<p className="message-detail">
+								This page doesn&apos;t use external CSS files
+								(&lt;link rel=&quot;stylesheet&quot;&gt;).
+							</p>
+							<p className="message-explanation">
+								The site may be using inline &lt;style&gt; tags,
+								CSS-in-JS (like styled-components), or has
+								already inlined its critical CSS. These methods
+								are not yet supported.
+							</p>
+						</section>
 					)}
 
 					{minified && !loading && (

@@ -1,139 +1,160 @@
-# Critical CSS Generator
+# Speedkit
 
-A modern web application for analyzing and extracting critical CSS from any webpage. Optimize your website's performance by identifying and isolating above-the-fold styles for faster initial page loads.
+<p align="center">
+  <strong>Your Complete Web Performance Toolkit</strong>
+</p>
 
-## What is Critical CSS?
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#demo">Demo</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#documentation">Documentation</a> •
+  <a href="#roadmap">Roadmap</a>
+</p>
 
-Critical CSS is the minimal set of styles required to render the above-the-fold content of a webpage. By inlining critical CSS and deferring the rest, you can significantly improve page load performance and Core Web Vitals scores.
+---
+
+## Overview
+
+Speedkit is a suite of web performance optimization tools that help developers identify and fix performance bottlenecks. Enter any URL and get actionable optimizations — not just audits, but the actual code you need.
+
+**Live Demo:** [speedkit.henzlymeghie.com](https://speedkit.henzlymeghie.com)
 
 ## Features
 
-- **URL Analysis** - Analyze any webpage by simply entering its URL
-- **Automatic CSS Extraction** - Automatically discovers and extracts all linked stylesheets
-- **Three CSS Variants**:
-  - **Combined & Minified CSS** - All stylesheets merged and optimized
-  - **Critical CSS** - Purged CSS containing only above-the-fold styles
-  - **Unminified CSS** - Raw combined output for debugging
-- **File Size Analysis** - See original vs. optimized file sizes with reduction percentages
-- **Download & Copy** - One-click download or copy to clipboard
-- **Modern UI** - Beautiful glassmorphic design with real-time feedback
+### 🎯 Critical CSS Generator
+Extract only the CSS needed for above-the-fold content. Typical results: **70-90% reduction** in initial CSS payload.
+
+- Automatic stylesheet discovery and extraction
+- Above-the-fold viewport analysis
+- Three output variants: combined, critical, and debug
+- File size comparison with reduction percentages
+
+### ⚡ Preload Tag Generator
+Generate optimized resource hints for faster loading.
+
+- Analyzes page resources and network requests
+- Generates `<link rel="preload">`, `preconnect`, and `dns-prefetch` tags
+- Prioritizes LCP-critical assets
+- Copy-ready HTML output
 
 ## Tech Stack
 
-- **Next.js 14** - React framework with API routes
-- **Puppeteer** - Headless browser automation for webpage analysis
-- **PostCSS** - CSS transformation pipeline
-- **PurgeCSS** - Removes unused CSS based on HTML content analysis
-- **CSSnano** - CSS minification and optimization
-- **WordPress Components** - Pre-built UI components
+| Technology | Purpose |
+|------------|---------|
+| **Next.js 14** | React framework with API routes |
+| **Puppeteer** | Headless browser for page analysis |
+| **PostCSS** | CSS transformation pipeline |
+| **PurgeCSS** | Unused CSS removal |
+| **CSSnano** | CSS minification |
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ installed
-- npm, yarn, pnpm, or bun
+- Node.js 18+
+- npm, yarn, or pnpm
 
 ### Installation
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/henzlym/critical-css.git
-cd critical-css
-```
+# Clone the repository
+git clone https://github.com/henzlym/speedkit.git
+cd speedkit
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-# or
-yarn install
-# or
-pnpm install
-```
 
-3. Run the development server:
-```bash
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## How to Use
+### Usage
 
-1. Enter the URL of the webpage you want to analyze
-2. Click "Generate Critical CSS"
-3. Wait for the analysis to complete (the app will scrape the page and process all stylesheets)
-4. View the results:
-   - **Combined & Minified CSS** - All styles optimized for production
-   - **Critical CSS** - Only the essential above-the-fold styles
-5. Download or copy the CSS for use in your project
-
-## How It Works
-
-1. **Scraping** - Puppeteer loads the target webpage in a headless browser
-2. **Extraction** - All linked stylesheets are discovered and downloaded
-3. **Processing** - PostCSS pipeline processes the CSS:
-   - Autoprefixer adds vendor prefixes
-   - CSSnano minifies the output
-   - PurgeCSS analyzes the HTML to identify used styles
-4. **Generation** - Three variants are generated and displayed with file size comparisons
+1. Navigate to the tool you want to use
+2. Enter a URL to analyze
+3. Click "Generate" and wait for analysis
+4. Copy or download the optimized output
 
 ## Project Structure
 
 ```
-src/
-├── app/
-│   ├── page.js              # Main UI component
-│   ├── layout.js            # Root layout
-│   ├── globals.css          # Global styles and design system
-│   └── components/
-│       └── file-view.js     # Stylesheet metadata display
-└── pages/
-    └── api/
-        └── fetch-css.js     # CSS extraction API endpoint
+speedkit/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── page.js             # Critical CSS Generator
+│   │   ├── preload/            # Preload Tag Generator
+│   │   └── components/         # Shared UI components
+│   ├── lib/
+│   │   └── features/           # Core optimization logic
+│   │       ├── above-the-fold/ # Viewport detection
+│   │       └── preload-generator/
+│   └── pages/
+│       └── api/                # API endpoints
+├── docs/                       # Documentation
+└── public/                     # Static assets
 ```
 
-## Use Cases
+## Documentation
 
-- **Performance Optimization** - Reduce initial page load time
-- **Core Web Vitals** - Improve LCP and FCP metrics
-- **CSS Auditing** - Analyze stylesheet size and usage
-- **Development** - Identify unused CSS in your projects
-- **Learning** - Understand CSS optimization techniques
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/architecture/README.md) | System design and technical decisions |
+| [API Reference](docs/api/README.md) | API endpoint documentation |
+| [Features](docs/features/README.md) | Detailed feature documentation |
+| [Roadmap](docs/roadmap.md) | Planned features and improvements |
+
+## Roadmap
+
+### Current
+- ✅ Critical CSS Generator
+- ✅ Preload Tag Generator
+- ✅ Above-the-fold mode
+
+### Planned
+- 🔄 Core Web Vitals Report
+- 📋 Image Optimization Analysis
+- 📋 Unused CSS Detector
+
+See [full roadmap](docs/roadmap.md) for details.
+
+## Performance Results
+
+| Metric | Typical Improvement |
+|--------|---------------------|
+| Critical CSS Size | 70-90% reduction |
+| Stylesheet Requests | 5-10 → 1 file |
+| LCP Impact | 200-500ms faster |
 
 ## Deployment
 
-### Deploy on Vercel
+### Vercel (Recommended)
 
-The easiest way to deploy is using the [Vercel Platform](https://vercel.com/new):
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/critical-css)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/henzlym/speedkit)
 
 ### Other Platforms
 
-This Next.js app can be deployed to any platform that supports Node.js:
-- Netlify
-- AWS Amplify
-- Railway
-- Render
-- Self-hosted with Node.js
+Supports any Node.js hosting: Netlify, Railway, Render, AWS, self-hosted.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! Please read the [contributing guidelines](CONTRIBUTING.md) first.
 
 ## License
 
-MIT License - feel free to use this project for personal or commercial purposes.
+MIT License — see [LICENSE](LICENSE) for details.
 
-## Acknowledgments
+## Author
 
-Built with [Next.js](https://nextjs.org/) and powered by [Puppeteer](https://pptr.dev/) and [PurgeCSS](https://purgecss.com/).
+**Henzly Meghie**  
+- Website: [henzlymeghie.com](https://henzlymeghie.com)
+- GitHub: [@henzlym](https://github.com/henzlym)
+- LinkedIn: [/in/henzlymeghie](https://linkedin.com/in/henzlymeghie)
 
 ---
 
-**Note:** This tool analyzes publicly accessible webpages. Ensure you have permission to analyze any website you don't own.
+<p align="center">
+  Built with ☕ and curiosity
+</p>

@@ -631,6 +631,53 @@ main {
 }
 
 /* ============================================
+   NO STYLESHEETS MESSAGE
+   ============================================ */
+.no-stylesheets-message {
+	background: var(--glass-bg);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border-radius: var(--radius);
+	border: 1px solid var(--glass-border);
+	padding: 3rem 2rem;
+	text-align: center;
+	max-width: 600px;
+	margin: 2rem auto;
+	animation: fadeSlideIn 0.5s ease-out forwards;
+}
+
+.no-stylesheets-message .message-icon {
+	margin-bottom: 1.5rem;
+	color: var(--mocha-mousse);
+}
+
+.no-stylesheets-message .message-icon svg {
+	opacity: 0.8;
+}
+
+.no-stylesheets-message h3 {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-bottom: 0.75rem;
+}
+
+.no-stylesheets-message .message-detail {
+	color: var(--text-secondary);
+	font-size: 1rem;
+	margin-bottom: 1rem;
+	line-height: 1.6;
+}
+
+.no-stylesheets-message .message-explanation {
+	color: var(--text-muted);
+	font-size: 0.875rem;
+	line-height: 1.7;
+	max-width: 450px;
+	margin: 0 auto;
+}
+
+/* ============================================
    SECTION TRANSITIONS
    ============================================ */
 .critical-css-results {
