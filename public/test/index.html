@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Critical CSS Test Page - The Daily Chronicle</title>
+    <link rel="stylesheet" href="test-styles.css">
+    <!-- Dynamic CSS injection point -->
+    <style id="critical-css-inject"></style>
+    <style id="combined-css-inject"></style>
+</head>
+<body>
+    <!-- ========================================================================
+         Section 1: Masthead / Hero (Above the Fold)
+         ======================================================================== -->
+    <header class="masthead">
+        <div class="masthead__logo">The Daily Chronicle</div>
+        <div class="masthead__divider"></div>
+        <h1 class="masthead__title">The Future of Digital Publishing</h1>
+        <p class="masthead__subtitle">
+            Exploring how modern web technologies are reshaping the way we consume and interact with digital content
+        </p>
+        <div class="masthead__meta">
+            <span>January 10, 2026</span>
+            <span>12 min read</span>
+            <span>Technology</span>
+        </div>
+    </header>
+
+    <!-- ========================================================================
+         Section 2: Featured Article Grid
+         ======================================================================== -->
+    <section class="featured-grid">
+        <header class="featured-grid__header">
+            <p class="featured-grid__label">Editor's Picks</p>
+            <h2 class="featured-grid__title">Featured Stories</h2>
+        </header>
+        <div class="featured-grid__container">
+            <article class="article-card">
+                <div class="article-card__image">01</div>
+                <div class="article-card__content">
+                    <span class="article-card__category">Technology</span>
+                    <h3 class="article-card__title">AI Revolution in Content Creation</h3>
+                    <p class="article-card__excerpt">How artificial intelligence is transforming the way publishers create and distribute content.</p>
+                    <span class="article-card__meta">5 min read</span>
+                </div>
+            </article>
+            <article class="article-card">
+                <div class="article-card__image">02</div>
+                <div class="article-card__content">
+                    <span class="article-card__category">Design</span>
+                    <h3 class="article-card__title">The Rise of Dark Mode</h3>
+                    <p class="article-card__excerpt">Why dark interfaces have become the preferred choice for millions of readers worldwide.</p>
+                    <span class="article-card__meta">4 min read</span>
+                </div>
+            </article>
+            <article class="article-card">
+                <div class="article-card__image">03</div>
+                <div class="article-card__content">
+                    <span class="article-card__category">Performance</span>
+                    <h3 class="article-card__title">Critical CSS Explained</h3>
+                    <p class="article-card__excerpt">Understanding how critical CSS improves page load times and user experience.</p>
+                    <span class="article-card__meta">6 min read</span>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- ========================================================================
+         Section 3: Image Slider / Carousel
+         ======================================================================== -->
+    <section class="slider-section">
+        <header class="slider-section__header">
+            <p class="slider-section__label">Visual Stories</p>
+            <h2 class="slider-section__title">Photo Gallery</h2>
+        </header>
+        <div class="slider">
+            <div class="slider__track" id="sliderTrack">
+                <div class="slider__slide">
+                    <div class="slider__slide-content">
+                        <div class="slider__slide-number">01</div>
+                        <h3 class="slider__slide-title">Innovation in Motion</h3>
+                        <p class="slider__slide-text">Capturing the essence of technological progress through stunning visual narratives.</p>
+                    </div>
+                </div>
+                <div class="slider__slide">
+                    <div class="slider__slide-content">
+                        <div class="slider__slide-number">02</div>
+                        <h3 class="slider__slide-title">Digital Landscapes</h3>
+                        <p class="slider__slide-text">Exploring the intersection of nature and technology in the modern world.</p>
+                    </div>
+                </div>
+                <div class="slider__slide">
+                    <div class="slider__slide-content">
+                        <div class="slider__slide-number">03</div>
+                        <h3 class="slider__slide-title">Human Connection</h3>
+                        <p class="slider__slide-text">Stories that bridge the gap between technology and human experience.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slider__controls">
+                <button class="slider__btn" id="prevBtn" aria-label="Previous slide">&larr;</button>
+                <button class="slider__btn" id="nextBtn" aria-label="Next slide">&rarr;</button>
+            </div>
+            <div class="slider__dots">
+                <span class="slider__dot slider__dot--active" data-slide="0"></span>
+                <span class="slider__dot" data-slide="1"></span>
+                <span class="slider__dot" data-slide="2"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================
+         Section 4: Quote / Pullquote
+         ======================================================================== -->
+    <section class="quote-section">
+        <div class="quote-section__content">
+            <div class="quote-section__icon">"</div>
+            <blockquote class="quote-section__text">
+                The web is not just about delivering content anymore. It's about delivering experiences that respect users' time and attention.
+            </blockquote>
+            <cite class="quote-section__author">Sarah Mitchell</cite>
+            <p class="quote-section__role">Chief Digital Officer, Media Corp</p>
+        </div>
+    </section>
+
+    <!-- ========================================================================
+         Section 5: Newsletter / Form Section
+         ======================================================================== -->
+    <section class="form-section">
+        <div class="form-section__container">
+            <header class="form-section__header">
+                <p class="form-section__label">Stay Updated</p>
+                <h2 class="form-section__title">Join Our Newsletter</h2>
+                <p class="form-section__description">Get the latest stories delivered directly to your inbox every week.</p>
+            </header>
+            <form class="newsletter-form" id="newsletterForm">
+                <div class="form-group">
+                    <label class="form-group__label" for="fullName">Full Name</label>
+                    <input type="text" id="fullName" class="form-group__input" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-group__label" for="email">Email Address</label>
+                    <input type="email" id="email" class="form-group__input" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-group__label" for="interests">Primary Interest</label>
+                    <select id="interests" class="form-group__select">
+                        <option value="">Select your interest</option>
+                        <option value="technology">Technology</option>
+                        <option value="design">Design</option>
+                        <option value="business">Business</option>
+                        <option value="culture">Culture</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="form-group__checkbox-wrapper">
+                        <input type="checkbox" id="consent" class="form-group__checkbox" required>
+                        <label class="form-group__checkbox-label" for="consent">
+                            I agree to receive weekly newsletters and understand I can unsubscribe at any time.
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="form-submit-btn">Subscribe Now</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ========================================================================
+         Section 6: Footer
+         ======================================================================== -->
+    <footer class="footer">
+        <div class="footer__grid">
+            <div class="footer__brand">
+                <div class="masthead__logo">The Daily Chronicle</div>
+                <p class="footer__brand-description">
+                    Delivering quality journalism and insightful stories since 2020. We believe in the power of well-crafted content to inform, inspire, and connect people.
+                </p>
+                <div class="footer__social">
+                    <a href="#" class="footer__social-link" aria-label="Twitter">X</a>
+                    <a href="#" class="footer__social-link" aria-label="Facebook">F</a>
+                    <a href="#" class="footer__social-link" aria-label="Instagram">I</a>
+                    <a href="#" class="footer__social-link" aria-label="LinkedIn">L</a>
+                </div>
+            </div>
+            <div class="footer__column">
+                <h4 class="footer__heading">Sections</h4>
+                <ul class="footer__links">
+                    <li><a href="#" class="footer__link">Technology</a></li>
+                    <li><a href="#" class="footer__link">Design</a></li>
+                    <li><a href="#" class="footer__link">Business</a></li>
+                    <li><a href="#" class="footer__link">Culture</a></li>
+                    <li><a href="#" class="footer__link">Opinion</a></li>
+                </ul>
+            </div>
+            <div class="footer__column">
+                <h4 class="footer__heading">Company</h4>
+                <ul class="footer__links">
+                    <li><a href="#" class="footer__link">About Us</a></li>
+                    <li><a href="#" class="footer__link">Careers</a></li>
+                    <li><a href="#" class="footer__link">Advertise</a></li>
+                    <li><a href="#" class="footer__link">Contact</a></li>
+                    <li><a href="#" class="footer__link">Press</a></li>
+                </ul>
+            </div>
+            <div class="footer__column">
+                <h4 class="footer__heading">Legal</h4>
+                <ul class="footer__links">
+                    <li><a href="#" class="footer__link">Privacy Policy</a></li>
+                    <li><a href="#" class="footer__link">Terms of Service</a></li>
+                    <li><a href="#" class="footer__link">Cookie Policy</a></li>
+                    <li><a href="#" class="footer__link">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <p>&copy; 2026 The Daily Chronicle. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ========================================================================
+         CSS Testing Panel (Fixed Position)
+         ======================================================================== -->
+    <div class="css-test-panel" id="cssTestPanel">
+        <div class="css-test-panel__header">
+            <span class="css-test-panel__title">CSS Test Panel</span>
+            <button class="css-test-panel__toggle" id="panelToggle" aria-label="Toggle panel">−</button>
+        </div>
+        <div class="css-test-panel__body">
+            <!-- Critical CSS Section -->
+            <div class="css-test-panel__section">
+                <label class="css-test-panel__label" for="criticalCssInput">Critical CSS (Above-the-Fold)</label>
+                <p class="css-test-panel__hint">Paste critical CSS here to test if above-fold styles work correctly</p>
+                <textarea
+                    id="criticalCssInput"
+                    class="css-test-panel__textarea css-test-panel__textarea--critical"
+                    placeholder="Paste your critical CSS here..."
+                ></textarea>
+                <div class="css-test-panel__actions">
+                    <button class="css-test-panel__btn css-test-panel__btn--apply" id="applyCriticalBtn">Apply</button>
+                    <button class="css-test-panel__btn css-test-panel__btn--clear" id="clearCriticalBtn">Clear</button>
+                </div>
+            </div>
+
+            <!-- Combined CSS Section -->
+            <div class="css-test-panel__section">
+                <label class="css-test-panel__label" for="combinedCssInput">Combined CSS (Full Page)</label>
+                <p class="css-test-panel__hint">Paste full page CSS here to test if all sections are styled correctly</p>
+                <textarea
+                    id="combinedCssInput"
+                    class="css-test-panel__textarea css-test-panel__textarea--combined"
+                    placeholder="Paste your combined CSS here..."
+                ></textarea>
+                <div class="css-test-panel__actions">
+                    <button class="css-test-panel__btn css-test-panel__btn--apply" id="applyCombinedBtn">Apply</button>
+                    <button class="css-test-panel__btn css-test-panel__btn--clear" id="clearCombinedBtn">Clear</button>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div id="cssStatus"></div>
+
+            <!-- Control Buttons -->
+            <div class="css-test-panel__actions mt-20">
+                <button class="css-test-panel__btn css-test-panel__btn--clear" id="disableOriginalBtn">Disable Original CSS</button>
+                <button class="css-test-panel__btn css-test-panel__btn--apply" id="enableOriginalBtn">Enable Original CSS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================
+         JavaScript for Interactivity
+         ======================================================================== -->
+    <script>
+        // Slider functionality
+        (function() {
+            const track = document.getElementById('sliderTrack');
+            const dots = document.querySelectorAll('.slider__dot');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            let currentSlide = 0;
+            const totalSlides = 3;
+
+            function goToSlide(index) {
+                currentSlide = index;
+                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('slider__dot--active', i === currentSlide);
+                });
+            }
+
+            prevBtn.addEventListener('click', () => {
+                goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
+            });
+
+            nextBtn.addEventListener('click', () => {
+                goToSlide((currentSlide + 1) % totalSlides);
+            });
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    goToSlide(parseInt(dot.dataset.slide));
+                });
+            });
+
+            // Auto-advance every 5 seconds
+            setInterval(() => {
+                goToSlide((currentSlide + 1) % totalSlides);
+            }, 5000);
+        })();
+
+        // CSS Test Panel functionality
+        (function() {
+            const panel = document.getElementById('cssTestPanel');
+            const panelToggle = document.getElementById('panelToggle');
+            const criticalInput = document.getElementById('criticalCssInput');
+            const combinedInput = document.getElementById('combinedCssInput');
+            const criticalInject = document.getElementById('critical-css-inject');
+            const combinedInject = document.getElementById('combined-css-inject');
+            const originalStylesheet = document.querySelector('link[href="test-styles.css"]');
+            const statusEl = document.getElementById('cssStatus');
+
+            function showStatus(message, type) {
+                statusEl.innerHTML = `<div class="css-test-panel__status css-test-panel__status--${type}">${message}</div>`;
+                setTimeout(() => {
+                    statusEl.innerHTML = '';
+                }, 3000);
+            }
+
+            // Toggle panel collapse
+            panelToggle.addEventListener('click', () => {
+                panel.classList.toggle('css-test-panel--collapsed');
+                panelToggle.textContent = panel.classList.contains('css-test-panel--collapsed') ? '+' : '−';
+            });
+
+            // Apply Critical CSS
+            document.getElementById('applyCriticalBtn').addEventListener('click', () => {
+                const css = criticalInput.value.trim();
+                if (css) {
+                    criticalInject.textContent = css;
+                    showStatus('Critical CSS applied! Check above-the-fold styling.', 'success');
+                } else {
+                    showStatus('Please enter some CSS first.', 'error');
+                }
+            });
+
+            // Clear Critical CSS
+            document.getElementById('clearCriticalBtn').addEventListener('click', () => {
+                criticalInput.value = '';
+                criticalInject.textContent = '';
+                showStatus('Critical CSS cleared.', 'success');
+            });
+
+            // Apply Combined CSS
+            document.getElementById('applyCombinedBtn').addEventListener('click', () => {
+                const css = combinedInput.value.trim();
+                if (css) {
+                    combinedInject.textContent = css;
+                    showStatus('Combined CSS applied! Check all sections.', 'success');
+                } else {
+                    showStatus('Please enter some CSS first.', 'error');
+                }
+            });
+
+            // Clear Combined CSS
+            document.getElementById('clearCombinedBtn').addEventListener('click', () => {
+                combinedInput.value = '';
+                combinedInject.textContent = '';
+                showStatus('Combined CSS cleared.', 'success');
+            });
+
+            // Disable original stylesheet
+            document.getElementById('disableOriginalBtn').addEventListener('click', () => {
+                if (originalStylesheet) {
+                    originalStylesheet.disabled = true;
+                    showStatus('Original stylesheet disabled. Page should look unstyled (except injected CSS).', 'success');
+                }
+            });
+
+            // Enable original stylesheet
+            document.getElementById('enableOriginalBtn').addEventListener('click', () => {
+                if (originalStylesheet) {
+                    originalStylesheet.disabled = false;
+                    showStatus('Original stylesheet enabled.', 'success');
+                }
+            });
+
+            // Real-time CSS application on input
+            criticalInput.addEventListener('input', () => {
+                criticalInject.textContent = criticalInput.value;
+            });
+
+            combinedInput.addEventListener('input', () => {
+                combinedInject.textContent = combinedInput.value;
+            });
+        })();
+
+        // Form submission prevention (for demo)
+        document.getElementById('newsletterForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Form submitted! (Demo only - no data sent)');
+        });
+    </script>
+</body>
+</html>

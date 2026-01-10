@@ -172,6 +172,52 @@ function CriticalInstructions() {
 				</p>
 			</div>
 
+			<div className="instruction-tip success">
+				<div className="tip-icon">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2"
+					>
+						<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+						<polyline points="22 4 12 14.01 9 11.01" />
+					</svg>
+				</div>
+				<div className="tip-content">
+					<strong>Performance Impact:</strong> Inlining critical CSS eliminates
+					render-blocking requests, allowing the browser to paint content
+					immediately. This can improve LCP (Largest Contentful Paint) by 50%
+					or more!
+				</div>
+			</div>
+
+			<div className="instruction-tip warning">
+				<div className="tip-icon">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2"
+					>
+						<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+						<line x1="12" y1="9" x2="12" y2="13" />
+						<line x1="12" y1="17" x2="12.01" y2="17" />
+					</svg>
+				</div>
+				<div className="tip-content">
+					<strong>Important:</strong> Critical CSS is page-specific. If your
+					above-the-fold content differs between pages, you may need to
+					generate critical CSS for each unique template.
+				</div>
+			</div>
+
 			<div className="instruction-step">
 				<div className="step-number">1</div>
 				<div className="step-content">
@@ -289,52 +335,6 @@ add_action('wp_head', function() {
   <?php
 }, 1); // Priority 1 = very early`}
 					/>
-				</div>
-			</div>
-
-			<div className="instruction-tip success">
-				<div className="tip-icon">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="2"
-					>
-						<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-						<polyline points="22 4 12 14.01 9 11.01" />
-					</svg>
-				</div>
-				<div className="tip-content">
-					<strong>Performance Impact:</strong> Inlining critical CSS eliminates
-					render-blocking requests, allowing the browser to paint content
-					immediately. This can improve LCP (Largest Contentful Paint) by 50%
-					or more!
-				</div>
-			</div>
-
-			<div className="instruction-tip warning">
-				<div className="tip-icon">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="2"
-					>
-						<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-						<line x1="12" y1="9" x2="12" y2="13" />
-						<line x1="12" y1="17" x2="12.01" y2="17" />
-					</svg>
-				</div>
-				<div className="tip-content">
-					<strong>Important:</strong> Critical CSS is page-specific. If your
-					above-the-fold content differs between pages, you may need to
-					generate critical CSS for each unique template.
 				</div>
 			</div>
 		</div>
