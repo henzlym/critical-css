@@ -211,8 +211,9 @@ export default function Home() {
 											id="above-fold-hint"
 											className="toggle-hint"
 										>
-											Extract CSS only for visible
-											viewport content
+											{aboveFoldMode
+												? "Generates critical CSS for the initial viewport"
+												: "Generates CSS only for styles used on this page"}
 										</span>
 									</span>
 								</label>
