@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Header from "../components/header";
 
 /**
  * Downloads content as a file
@@ -81,20 +82,7 @@ export default function PreloadPage() {
 
 	return (
 		<div>
-			<header>
-				<div className="container">
-					<h1>Preload Tag Generator</h1>
-					<nav>
-						<a href="/">Critical CSS</a>
-						<a
-							href="/preload"
-							className="active"
-						>
-							Preload Tags
-						</a>
-					</nav>
-				</div>
-			</header>
+			<Header />
 
 			<main>
 				<div className="container">

@@ -3,6 +3,7 @@
 import "@wordpress/components/build-style/style.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CssResultSection from "./components/css-result-section";
+import Header from "./components/header";
 import InstructionsDrawer from "./components/instructions-drawer";
 
 /**
@@ -137,20 +138,7 @@ export default function Home() {
 
 	return (
 		<div>
-			<header>
-				<div className="container">
-					<h1>Critical Path CSS Generator</h1>
-					<nav>
-						<a
-							href="/"
-							className="active"
-						>
-							Critical CSS
-						</a>
-						<a href="/preload">Preload Tags</a>
-					</nav>
-				</div>
-			</header>
+			<Header />
 
 			<main>
 				<div className="container">

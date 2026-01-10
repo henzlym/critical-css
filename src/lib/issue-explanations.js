@@ -30,6 +30,121 @@ This creates a render-blocking bottleneck.<br/>
 		`
 	},
 
+	// SEO-Critical Script Explanations
+	seo_critical_schema_org: {
+		brief: 'Schema.org structured data must stay in <head> for proper search engine indexing.',
+
+		laymanDetailed: `This script contains structured data that tells Google and other search engines what your page is about - things like FAQs, products, recipes, or business info. Search engines read this data to show rich results (those fancy snippets with stars, prices, or expandable FAQs). Moving or deferring this script could make your rich results disappear from search.`,
+
+		technicalDetailed: `
+<strong>Why Keep Schema.org Scripts in &lt;head&gt;:</strong><br/>
+Search engine crawlers parse structured data during page crawling. Unlike user browsers, crawlers may not execute all JavaScript.<br/>
+<br/>
+<strong>SEO Impact if Moved/Deferred:</strong><br/>
+- Rich snippets (FAQ, Product, Review stars) may disappear<br/>
+- Knowledge panel information could be lost<br/>
+- Reduced click-through rates from search results<br/>
+- Google may not see updated structured data<br/>
+<br/>
+<strong>Best Practice:</strong><br/>
+- Keep JSON-LD scripts in &lt;head&gt; or early in &lt;body&gt;<br/>
+- Ensure content is static, not dynamically injected<br/>
+- Validate with Google's Rich Results Test
+		`
+	},
+
+	seo_critical_gtm: {
+		brief: 'Google Tag Manager should use async but remain in <head> for accurate tracking.',
+
+		laymanDetailed: `Google Tag Manager is the "control center" for all your tracking and marketing tools. It needs to load early so it can track every visitor from the moment they land on your page. If it loads too late, you'll miss data from visitors who leave quickly - and those quick visits are often the majority!`,
+
+		technicalDetailed: `
+<strong>Why GTM Needs to Stay in &lt;head&gt;:</strong><br/>
+GTM manages all marketing tags (analytics, ads, pixels). Late loading causes data loss.<br/>
+<br/>
+<strong>Impact of Moving GTM:</strong><br/>
+- 10-30% of pageviews missed (bounce visitors)<br/>
+- Inaccurate attribution data for ad campaigns<br/>
+- Delayed firing of conversion pixels<br/>
+- Skewed A/B testing results<br/>
+<br/>
+<strong>Best Practice:</strong><br/>
+- Use GTM's recommended async implementation<br/>
+- Keep snippet immediately after &lt;head&gt; tag<br/>
+- Don't defer or lazy-load the container script<br/>
+- Use dataLayer.push() for events after DOM ready
+		`
+	},
+
+	seo_critical_analytics: {
+		brief: 'Analytics scripts should use async to balance performance and data accuracy.',
+
+		laymanDetailed: `Analytics tools like Google Analytics track who visits your site and what they do. If these scripts load too late, you'll miss counting visitors who leave quickly. This can make your traffic look lower than it really is and mess up your marketing decisions. Use async loading to get the best of both worlds.`,
+
+		technicalDetailed: `
+<strong>Why Analytics Should Stay in &lt;head&gt; (with async):</strong><br/>
+Analytics must fire before users leave to capture all visits accurately.<br/>
+<br/>
+<strong>Impact of Delayed Loading:</strong><br/>
+- Underreported traffic (especially mobile users)<br/>
+- Missing bounce visitor data<br/>
+- Inaccurate session duration metrics<br/>
+- Incomplete user journey tracking<br/>
+<br/>
+<strong>Best Practice:</strong><br/>
+- Use async attribute (not defer)<br/>
+- Place in &lt;head&gt; with async<br/>
+- Initialize tracking as early as possible<br/>
+- Consider Core Web Vitals impact
+		`
+	},
+
+	seo_critical_consent: {
+		brief: 'Cookie consent must load first for GDPR/CCPA compliance - this is legally required.',
+
+		laymanDetailed: `Cookie consent tools MUST load before any tracking or analytics scripts - this is a legal requirement in the EU (GDPR) and California (CCPA). If your consent banner loads after tracking scripts start, you could be collecting data without permission, which can result in massive fines. This script cannot be moved or deferred.`,
+
+		technicalDetailed: `
+<strong>Legal Requirement - Cannot Be Deferred:</strong><br/>
+Privacy regulations require explicit consent BEFORE tracking begins.<br/>
+<br/>
+<strong>Compliance Risk if Deferred:</strong><br/>
+- GDPR fines up to €20 million or 4% of revenue<br/>
+- CCPA penalties up to $7,500 per violation<br/>
+- Legal liability for data processing without consent<br/>
+- Audit failure for privacy certifications<br/>
+<br/>
+<strong>Required Implementation:</strong><br/>
+- Must be first script in &lt;head&gt;<br/>
+- Cannot use async or defer<br/>
+- Must block other scripts until consent given<br/>
+- Keep script synchronous and lightweight
+		`
+	},
+
+	seo_critical_facebook_pixel: {
+		brief: 'Facebook Pixel should use async but stay in <head> for ad attribution accuracy.',
+
+		laymanDetailed: `The Facebook Pixel tracks when visitors come from Facebook ads and what they do on your site. If it loads too late, Facebook won't know which ad brought the visitor, and you'll see "unknown" conversions in your ad reports. This makes it harder to know which ads are actually working.`,
+
+		technicalDetailed: `
+<strong>Why Facebook Pixel Needs Early Loading:</strong><br/>
+Pixel must fire before user leaves to attribute conversions to the correct ad.<br/>
+<br/>
+<strong>Impact of Delayed Loading:</strong><br/>
+- Lost conversion attribution<br/>
+- Incomplete audience building<br/>
+- Reduced retargeting pool<br/>
+- Higher cost per acquisition (bad optimization data)<br/>
+<br/>
+<strong>Best Practice:</strong><br/>
+- Use async but keep in &lt;head&gt;<br/>
+- Fire PageView immediately<br/>
+- Use event deduplication for server-side events<br/>
+- Consider Conversions API for redundancy
+		`
+	},
+
 	analytics_scripts_no_async: {
 		brief: 'Analytics should use async to avoid blocking rendering.',
 
@@ -96,6 +211,9 @@ Render-blocking scripts in &lt;head&gt; delay the browser's ability to display a
 	}
 };
 
+/**
+ * Get explanation for a general issue text
+ */
 export function getIssueExplanation(issueText) {
 	if (issueText.includes('synchronous script') && issueText.includes('<head>')) {
 		return issueExplanations.synchronous_scripts_in_head;
@@ -110,4 +228,22 @@ export function getIssueExplanation(issueText) {
 		return issueExplanations.blocking_scripts_in_head;
 	}
 	return null;
+}
+
+/**
+ * Get explanation for SEO-critical script types
+ * @param {string} seoCriticalType - Type from detectSeoCriticalScript (e.g., 'gtm', 'schemaOrg')
+ * @returns {Object|null} Explanation object with brief, laymanDetailed, technicalDetailed
+ */
+export function getSeoCriticalExplanation(seoCriticalType) {
+	const typeMap = {
+		schemaOrg: issueExplanations.seo_critical_schema_org,
+		jsonLd: issueExplanations.seo_critical_schema_org,
+		gtm: issueExplanations.seo_critical_gtm,
+		googleAnalytics: issueExplanations.seo_critical_analytics,
+		facebookPixel: issueExplanations.seo_critical_facebook_pixel,
+		consentManagement: issueExplanations.seo_critical_consent
+	};
+
+	return typeMap[seoCriticalType] || null;
 }

@@ -141,17 +141,36 @@ export default async function handler(req, res) {
 				};
 			});
 
-			// Collect all stylesheets
-			const stylesheets = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
-			const stylesheetData = stylesheets.map((link, index) => ({
-				id: `style-${index + 1}`,
+			// Collect all stylesheets (external links)
+			const externalStylesheets = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+			const externalStylesheetData = externalStylesheets.map((link, index) => ({
+				id: `style-ext-${index + 1}`,
 				href: link.href,
 				media: link.media || 'all',
+				isInline: false,
 				position: {
 					location: getPosition(link),
 					index: index
 				}
 			}));
+
+			// Collect all inline style tags
+			const inlineStyles = Array.from(document.querySelectorAll('style'));
+			const inlineStyleData = inlineStyles.map((style, index) => ({
+				id: `style-inline-${index + 1}`,
+				href: null,
+				media: style.media || 'all',
+				isInline: true,
+				textContent: style.textContent || '',
+				contentLength: (style.textContent || '').length,
+				position: {
+					location: getPosition(style),
+					index: index
+				}
+			}));
+
+			// Combine all stylesheets
+			const stylesheetData = [...externalStylesheetData, ...inlineStyleData];
 
 			// Get Performance Resource Timing
 			const resourceTimings = performance.getEntriesByType('resource')
@@ -222,28 +241,60 @@ export default async function handler(req, res) {
 			};
 		});
 
-		// Process stylesheets
+		// Process stylesheets (both external and inline)
 		const processedStylesheets = resourceData.stylesheets.map(stylesheet => {
-			const timing = resourceData.timings.find(t => t.name === stylesheet.href);
+			// For external stylesheets, find timing data
+			const timing = stylesheet.href
+				? resourceData.timings.find(t => t.name === stylesheet.href)
+				: null;
+
+			// Extract filename from URL for external stylesheets
+			let filename = null;
+			if (stylesheet.href) {
+				try {
+					const urlPath = new URL(stylesheet.href).pathname;
+					filename = urlPath.split('/').pop() || urlPath;
+				} catch {
+					filename = stylesheet.href;
+				}
+			}
+
+			// Calculate size for inline styles
+			const inlineSize = stylesheet.isInline && stylesheet.contentLength
+				? stylesheet.contentLength
+				: null;
 
 			return {
 				...stylesheet,
-				type: 'external',
+				type: stylesheet.isInline ? 'inline' : 'external',
+				filename: filename,
+				domain: stylesheet.href ? new URL(stylesheet.href).hostname : null,
 				loading: {
-					isBlocking: stylesheet.media === 'all' || !stylesheet.media,
+					isBlocking: (stylesheet.media === 'all' || !stylesheet.media) && stylesheet.position.location === 'head',
 					isCritical: stylesheet.position.location === 'head'
 				},
-				size: timing ? {
-					transferSize: timing.transferSize,
-					resourceSize: timing.decodedBodySize
-				} : null,
+				size: stylesheet.isInline
+					? {
+						transferSize: inlineSize,
+						resourceSize: inlineSize
+					}
+					: timing
+						? {
+							transferSize: timing.transferSize,
+							resourceSize: timing.decodedBodySize
+						}
+						: null,
 				recommendation: {
 					action: stylesheet.position.location === 'head' && (stylesheet.media === 'all' || !stylesheet.media)
 						? 'consider-critical-css'
 						: 'ok',
-					reason: stylesheet.position.location === 'head'
-						? 'Consider extracting critical CSS for above-the-fold content'
-						: 'Stylesheet is properly placed'
+					reason: stylesheet.isInline
+						? stylesheet.position.location === 'head'
+							? 'Inline styles in head are good for critical CSS'
+							: 'Consider moving critical inline styles to head'
+						: stylesheet.position.location === 'head'
+							? 'Consider extracting critical CSS for above-the-fold content'
+							: 'Stylesheet is properly placed'
 				}
 			};
 		});
@@ -252,6 +303,8 @@ export default async function handler(req, res) {
 		const summary = {
 			totalScripts: processedScripts.length,
 			totalStylesheets: processedStylesheets.length,
+			externalStylesheets: processedStylesheets.filter(s => s.type === 'external').length,
+			inlineStylesheets: processedStylesheets.filter(s => s.type === 'inline').length,
 			renderBlockingScripts: processedScripts.filter(s => s.loading.isBlocking).length,
 			renderBlockingStylesheets: processedStylesheets.filter(s => s.loading.isBlocking).length,
 			thirdPartyScripts: processedScripts.filter(s => s.category !== 'internal').length,

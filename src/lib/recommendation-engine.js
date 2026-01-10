@@ -67,6 +67,234 @@ function isNonEssentialBlocking(criticality, position, loading) {
 }
 
 /**
+ * SEO-Critical Script Patterns
+ *
+ * This module detects scripts that MUST remain in the <head> section for proper
+ * SEO indexing, analytics tracking, and legal compliance. Moving these scripts
+ * can negatively impact search rankings, analytics accuracy, and legal standing.
+ *
+ * ## Categories Detected
+ *
+ * ### 1. Structured Data (Schema.org / JSON-LD)
+ * **Impact Level:** HIGH
+ * **Detection Patterns:**
+ * - `@context.*schema.org` - Schema.org context declarations
+ * - `"@type": "FAQPage|Article|Product|..."` - Schema type definitions
+ * - `type="application/ld+json"` - JSON-LD script type attribute
+ *
+ * **Why It Matters:**
+ * Search engines (Google, Bing) parse structured data to generate rich snippets
+ * in search results - star ratings, FAQ accordions, product prices, recipe cards, etc.
+ * If this data is deferred or moved, crawlers may not execute the JavaScript needed
+ * to see it, causing rich results to disappear.
+ *
+ * **Supported Schema Types:**
+ * FAQPage, Article, Product, Organization, WebSite, BreadcrumbList,
+ * LocalBusiness, Review, Event, Recipe, HowTo, VideoObject
+ *
+ * ---
+ *
+ * ### 2. Google Tag Manager (GTM)
+ * **Impact Level:** MEDIUM
+ * **Detection Patterns:**
+ * - `gtm.start` - GTM initialization
+ * - `googletagmanager.com/gtm` - GTM script URL
+ * - `GTM-[A-Z0-9]+` - GTM container ID format
+ *
+ * **Why It Matters:**
+ * GTM is the central hub for marketing tags, analytics, and conversion tracking.
+ * If GTM loads late, it misses tracking users who bounce quickly (often 10-30%
+ * of visitors). This leads to underreported traffic and skewed conversion data.
+ *
+ * **Recommendation:** Use async attribute but keep in <head>
+ *
+ * ---
+ *
+ * ### 3. Google Analytics (GA4 / Universal Analytics)
+ * **Impact Level:** MEDIUM
+ * **Detection Patterns:**
+ * - `gtag('config', ...)` - GA4 configuration
+ * - `google-analytics.com/analytics` - Universal Analytics
+ * - `googletagmanager.com/gtag` - GA4 via gtag.js
+ * - `ga('create', ...)` - Universal Analytics legacy
+ * - `GoogleAnalyticsObject` - UA global object
+ *
+ * **Why It Matters:**
+ * Analytics must fire before users leave to capture pageviews accurately.
+ * Delayed loading can miss 10-30% of sessions, particularly from mobile users
+ * and those with slow connections who bounce quickly.
+ *
+ * **Recommendation:** Use async attribute, keep in <head>
+ *
+ * ---
+ *
+ * ### 4. Facebook Pixel (Meta Pixel)
+ * **Impact Level:** MEDIUM
+ * **Detection Patterns:**
+ * - `fbq('init', ...)` - Pixel initialization
+ * - `connect.facebook.net.*fbevents` - Pixel script URL
+ *
+ * **Why It Matters:**
+ * Facebook Pixel tracks ad conversions and builds retargeting audiences.
+ * Late loading means missed attribution - Facebook won't know which ad
+ * brought the visitor, leading to "unknown" conversions and poor ad optimization.
+ *
+ * **Recommendation:** Use async attribute, keep in <head>
+ *
+ * ---
+ *
+ * ### 5. Cookie Consent / Privacy Management
+ * **Impact Level:** CRITICAL (Legal Requirement)
+ * **Detection Patterns:**
+ * - `cookieconsent` - Generic consent libraries
+ * - `onetrust` - OneTrust CMP
+ * - `cookiebot` - Cookiebot CMP
+ * - `trustarc` - TrustArc CMP
+ * - `privacymanager` - Various privacy managers
+ *
+ * **Why It Matters:**
+ * GDPR (EU) and CCPA (California) REQUIRE user consent BEFORE tracking begins.
+ * If consent loads after analytics/pixels fire, you're collecting data illegally.
+ * Fines can reach €20 million or 4% of global revenue under GDPR.
+ *
+ * **Recommendation:** MUST be synchronous, MUST be first script in <head>
+ * Cannot use async or defer - this is a legal compliance requirement.
+ *
+ * ---
+ *
+ * ## How Detection Works
+ *
+ * 1. For inline scripts: Checks `textContent` against regex patterns
+ * 2. For external scripts: Checks `src` URL against regex patterns
+ * 3. For JSON-LD: Checks `type="application/ld+json"` attribute
+ *
+ * ## Usage
+ *
+ * ```javascript
+ * import { detectSeoCriticalScript } from './recommendation-engine';
+ *
+ * const result = detectSeoCriticalScript(scriptObject);
+ * if (result) {
+ *   console.log(result.name);      // "Google Tag Manager"
+ *   console.log(result.seoImpact); // "medium"
+ *   console.log(result.caveat);    // User-friendly warning message
+ * }
+ * ```
+ *
+ * @see https://developers.google.com/search/docs/appearance/structured-data
+ * @see https://support.google.com/tagmanager/answer/6102821
+ * @see https://gdpr.eu/cookies/
+ */
+const SEO_CRITICAL_PATTERNS = {
+  // Structured Data / Schema.org
+  schemaOrg: {
+    patterns: [
+      /@context.*schema\.org/i,
+      /"@type"\s*:\s*"(FAQPage|Article|Product|Organization|WebSite|BreadcrumbList|LocalBusiness|Review|Event|Recipe|HowTo|VideoObject)"/i
+    ],
+    name: 'Structured Data (Schema.org)',
+    reason: 'Structured data (Schema.org) must remain in the document for search engines to properly index rich snippets. Moving or deferring this script may cause your FAQ, product, or article rich results to disappear from Google search results.',
+    seoImpact: 'high',
+    keepInHead: true,
+    caveat: 'SEO Impact: Rich snippets and enhanced search results depend on this script being present and parseable by search engine crawlers.'
+  },
+  // Google Tag Manager
+  gtm: {
+    patterns: [
+      /gtm\.start/i,
+      /googletagmanager\.com\/gtm/i,
+      /GTM-[A-Z0-9]+/i
+    ],
+    name: 'Google Tag Manager',
+    reason: 'Google Tag Manager initializes tracking and marketing pixels. It should use async but remain in the <head> to capture all pageviews accurately.',
+    seoImpact: 'medium',
+    keepInHead: true,
+    caveat: 'Analytics Impact: Moving GTM to the end of the body may cause missed pageviews for users who leave quickly (bounce visitors), leading to inaccurate analytics data.'
+  },
+  // Google Analytics / gtag
+  googleAnalytics: {
+    patterns: [
+      /gtag\s*\(\s*['"]config['"]/i,
+      /google-analytics\.com\/analytics/i,
+      /googletagmanager\.com\/gtag/i,
+      /ga\s*\(\s*['"]create['"]/i,
+      /GoogleAnalyticsObject/i
+    ],
+    name: 'Google Analytics',
+    reason: 'Google Analytics tracking should remain in the <head> with async to capture all pageviews accurately without blocking render.',
+    seoImpact: 'medium',
+    keepInHead: true,
+    caveat: 'Analytics Impact: Delayed analytics loading may miss 10-30% of pageviews from users who leave within the first few seconds.'
+  },
+  // Facebook Pixel
+  facebookPixel: {
+    patterns: [
+      /fbq\s*\(\s*['"]init['"]/i,
+      /connect\.facebook\.net.*fbevents/i
+    ],
+    name: 'Facebook Pixel',
+    reason: 'Facebook Pixel should load early to track conversions accurately. Use async but keep in <head>.',
+    seoImpact: 'medium',
+    keepInHead: true,
+    caveat: 'Marketing Impact: Delayed pixel loading may miss attribution for quick visitors, affecting ad campaign optimization and retargeting.'
+  },
+  // Consent Management
+  consentManagement: {
+    patterns: [
+      /cookieconsent/i,
+      /onetrust/i,
+      /cookiebot/i,
+      /trustarc/i,
+      /privacymanager/i
+    ],
+    name: 'Cookie Consent',
+    reason: 'Cookie consent must load before any tracking scripts for GDPR/CCPA compliance. This is a legal requirement.',
+    seoImpact: 'critical',
+    keepInHead: true,
+    caveat: 'Legal Requirement: This script MUST load before other tracking scripts. Moving it could result in compliance violations and potential fines.'
+  },
+  // JSON-LD Scripts (by type attribute)
+  jsonLd: {
+    patterns: [],  // Detected by type="application/ld+json"
+    name: 'JSON-LD Structured Data',
+    reason: 'JSON-LD structured data is used by search engines to understand page content and generate rich results.',
+    seoImpact: 'high',
+    keepInHead: true,
+    caveat: 'SEO Impact: This structured data powers rich snippets in search results (FAQs, reviews, products, etc.). Removing or breaking it will cause these enhanced listings to disappear.'
+  }
+};
+
+/**
+ * Detect if a script is SEO-critical based on its content or URL
+ *
+ * @param {Object} script - Script object
+ * @returns {Object|null} SEO critical info or null
+ */
+export function detectSeoCriticalScript(script) {
+  const contentToCheck = script.isInline
+    ? (script.textContent || '')
+    : (script.src || '');
+
+  // Check for JSON-LD type attribute
+  if (script.type === 'application/ld+json') {
+    return { type: 'jsonLd', ...SEO_CRITICAL_PATTERNS.jsonLd };
+  }
+
+  // Check each pattern category
+  for (const [key, config] of Object.entries(SEO_CRITICAL_PATTERNS)) {
+    if (!config.patterns || config.patterns.length === 0) continue;
+
+    for (const pattern of config.patterns) {
+      if (pattern.test(contentToCheck)) {
+        return { type: key, ...config };
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
  * Category-based recommendation rules
  * Maps script categories to optimization strategies
  */
@@ -268,8 +496,29 @@ function analyzeInlineScript(content) {
 export function generateRecommendation(script) {
   const { category, position, loading, isInline, textContent, vendor } = script;
 
+  // First: Check for SEO-critical scripts
+  const seoCritical = detectSeoCriticalScript(script);
+
   // Rule 1: Inline script analysis
   if (isInline) {
+    // Special handling for SEO-critical inline scripts (JSON-LD, Schema.org, GTM init)
+    if (seoCritical) {
+      return {
+        criticality: 'seo-critical',
+        suggestedStrategy: 'keep-as-is',
+        suggestedPosition: position.location,
+        reason: seoCritical.reason,
+        hasIssue: false,
+        isSeoCritical: true,
+        seoCriticalType: seoCritical.type,
+        seoCriticalName: seoCritical.name,
+        seoImpact: seoCritical.seoImpact,
+        caveat: seoCritical.caveat,
+        codeExample: `<!-- ${seoCritical.name} - Keep as-is for SEO/Analytics -->\n<script${script.type ? ` type="${script.type}"` : ''}>\n${textContent?.substring(0, 200)}${textContent?.length > 200 ? '...' : ''}\n</script>`,
+        currentCode: generateCurrentCode(script)
+      };
+    }
+
     const inlineCriticality = analyzeInlineScript(textContent);
 
     if (inlineCriticality === 'critical') {
@@ -291,6 +540,31 @@ export function generateRecommendation(script) {
       reason: 'Move non-critical inline scripts to the end of the body to avoid blocking rendering.',
       hasIssue: position.location === 'head',
       codeExample: `<!-- Move to end of <body> -->\n<script>\n${textContent}\n</script>`,
+      currentCode: generateCurrentCode(script)
+    };
+  }
+
+  // Rule 1.5: SEO-critical external scripts
+  if (seoCritical) {
+    // For SEO-critical scripts, suggest async but warn about moving
+    const currentlyOptimal = loading.strategy === 'async' ||
+                             (seoCritical.type === 'consentManagement' && position.location === 'head');
+
+    return {
+      criticality: 'seo-critical',
+      suggestedStrategy: seoCritical.type === 'consentManagement' ? 'keep-sync-in-head' : 'async',
+      suggestedPosition: 'head',
+      reason: seoCritical.reason,
+      hasIssue: !currentlyOptimal && loading.strategy === 'none',
+      isSeoCritical: true,
+      seoCriticalType: seoCritical.type,
+      seoCriticalName: seoCritical.name,
+      seoImpact: seoCritical.seoImpact,
+      caveat: seoCritical.caveat,
+      currentStrategy: loading.strategy || 'none',
+      currentPosition: position.location,
+      blockingScore: calculateBlockingScore(script),
+      codeExample: selectTemplate({ ...script, recommendation: { suggestedStrategy: 'async', suggestedPosition: 'head' } }),
       currentCode: generateCurrentCode(script)
     };
   }
@@ -354,19 +628,33 @@ export function generateRecommendation(script) {
  */
 export function generateInsights(scripts) {
   const issues = [];
+  const seoCriticalScripts = [];
   let totalBlockingTime = 0;
   let potentialSavings = 0;
 
-  // Identify main issues
+  // Identify SEO-critical scripts
+  scripts.forEach(script => {
+    if (script.recommendation?.isSeoCritical) {
+      seoCriticalScripts.push({
+        name: script.recommendation.seoCriticalName,
+        type: script.recommendation.seoCriticalType,
+        caveat: script.recommendation.caveat
+      });
+    }
+  });
+
+  // Identify main issues (excluding SEO-critical scripts from "problems")
   const headScriptsSync = scripts.filter(s =>
     s.position.location === 'head' &&
     s.loading.strategy === 'none' &&
-    !s.isInline
+    !s.isInline &&
+    !s.recommendation?.isSeoCritical  // Don't flag SEO-critical scripts as issues
   );
 
   const analyticsNoDefer = scripts.filter(s =>
     s.category === 'analytics' &&
-    s.loading.strategy === 'none'
+    s.loading.strategy === 'none' &&
+    !s.recommendation?.isSeoCritical
   );
 
   const chatWidgetsSync = scripts.filter(s =>
@@ -379,7 +667,7 @@ export function generateInsights(scripts) {
   }
 
   if (analyticsNoDefer.length > 0) {
-    issues.push(`${analyticsNoDefer.length} analytics script${analyticsNoDefer.length > 1 ? 's' : ''} should use defer attribute`);
+    issues.push(`${analyticsNoDefer.length} analytics script${analyticsNoDefer.length > 1 ? 's' : ''} should use async attribute`);
     potentialSavings += analyticsNoDefer.length * 150; // Estimate 150ms per script
   }
 
@@ -388,9 +676,9 @@ export function generateInsights(scripts) {
     potentialSavings += chatWidgetsSync.length * 150; // Estimate 150ms per widget
   }
 
-  // Calculate estimated blocking time
+  // Calculate estimated blocking time (excluding SEO-critical scripts)
   scripts.forEach(script => {
-    if (script.recommendation && script.recommendation.hasIssue) {
+    if (script.recommendation && script.recommendation.hasIssue && !script.recommendation.isSeoCritical) {
       if (script.size && script.size.transferSize) {
         // Rough estimate: 1KB = 1ms on 3G
         totalBlockingTime += Math.floor(script.size.transferSize / 1000);
@@ -406,12 +694,28 @@ export function generateInsights(scripts) {
     potentialSavings = headScriptsSync.length * 150;
   }
 
-  return {
+  // Build result object
+  const result = {
     totalBlockingTime,
     potentialSavings: Math.min(potentialSavings, totalBlockingTime),
-    mainIssues: issues.length > 0 ? issues : ['No major issues detected'],
-    issueCount: issues.length
+    mainIssues: issues,
+    issueCount: issues.length,
+    hasNoIssues: issues.length === 0,
+    seoCriticalScripts: seoCriticalScripts,
+    seoCriticalCount: seoCriticalScripts.length
   };
+
+  // Add success message or SEO context when no issues
+  if (issues.length === 0) {
+    if (seoCriticalScripts.length > 0) {
+      result.successMessage = 'No render-blocking issues found. Your SEO and analytics scripts are correctly configured.';
+      result.seoCriticalNote = `Found ${seoCriticalScripts.length} SEO-critical script${seoCriticalScripts.length > 1 ? 's' : ''} that should remain in <head> for proper indexing and analytics.`;
+    } else {
+      result.successMessage = 'Excellent! No render-blocking issues detected. Your scripts are well-optimized.';
+    }
+  }
+
+  return result;
 }
 
 /**

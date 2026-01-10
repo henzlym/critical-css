@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
+import CategoryGroup from "../components/category-group";
 import FormInput from "../components/form-input";
+import Header from "../components/header";
 import LoaderOrb from "../components/loader-orb";
 import SummaryDashboard from "../components/summary-dashboard";
-import CategoryGroup from "../components/category-group";
 
 /**
  * RenderBlockingPage Component
@@ -114,27 +115,28 @@ export default function RenderBlockingPage() {
 	const nonBlockingCategories = sortCategories(groupedScripts.nonBlocking);
 
 	return (
-		<div className="page-container">
-			<main>
-				<section className="hero">
-				<h1>
-					<span className="gradient-text">Render-Blocking</span> Resources Analysis
-				</h1>
-				<p className="subtitle">
-					Identify and optimize render-blocking scripts for better Core Web Vitals.
-					Get actionable recommendations with copy-ready code examples.
-				</p>
+		<div>
+			<Header />
 
-				<FormInput
-					url={url}
-					onSubmit={handleSubmit}
-					onChange={handleUrlChange}
-					loading={loading}
-					placeholder="https://example.com"
-					buttonText="Analyze Page"
-					loadingText="Analyzing..."
-				/>
-			</section>
+			<main>
+				<div className="container">
+					<section className="hero">
+						<h2>Render-Blocking Resources Analysis</h2>
+						<p className="hero-description">
+							Identify and optimize render-blocking scripts for better Core Web Vitals.
+							Get actionable recommendations with copy-ready code examples.
+						</p>
+
+						<FormInput
+							url={url}
+							onSubmit={handleSubmit}
+							onChange={handleUrlChange}
+							loading={loading}
+							placeholder="https://example.com"
+							buttonText="Analyze Page"
+							loadingText="Analyzing..."
+						/>
+					</section>
 
 			{loading && <LoaderOrb text="Analyzing render-blocking resources..." />}
 
@@ -221,8 +223,55 @@ export default function RenderBlockingPage() {
 					{results.stylesheets && results.stylesheets.length > 0 && (
 						<div className="stylesheets-section">
 							<div className="section-header">
-								<h2>Stylesheets</h2>
-								<p>{results.summary.renderBlockingStylesheets} render-blocking stylesheet{results.summary.renderBlockingStylesheets !== 1 ? 's' : ''} detected.</p>
+								<div className="header-with-badge">
+									<h2>Stylesheets</h2>
+									<span className={`priority-badge ${results.summary.renderBlockingStylesheets > 0 ? 'warning' : 'success'}`}>
+										{results.summary.renderBlockingStylesheets} blocking
+									</span>
+								</div>
+								<p>
+									{results.summary.externalStylesheets || 0} external, {results.summary.inlineStylesheets || 0} inline stylesheet{results.stylesheets.length !== 1 ? 's' : ''} detected.
+								</p>
+							</div>
+
+							<div className="stylesheet-list">
+								{results.stylesheets.map((stylesheet, index) => {
+									const sizeKB = stylesheet.size?.transferSize
+										? (stylesheet.size.transferSize / 1024).toFixed(1)
+										: null;
+
+									return (
+										<div
+											key={stylesheet.id || index}
+											className={`stylesheet-item ${stylesheet.loading?.isBlocking ? 'blocking' : ''}`}
+										>
+											<div className="stylesheet-info">
+												<span className="stylesheet-name">
+													{stylesheet.isInline
+														? 'Inline Style'
+														: stylesheet.filename || 'Unknown'}
+												</span>
+												{stylesheet.domain && (
+													<span className="stylesheet-domain">{stylesheet.domain}</span>
+												)}
+											</div>
+
+											<div className="stylesheet-meta">
+												<span className={`badge ${stylesheet.isInline ? 'badge-category' : 'badge-standard'}`}>
+													{stylesheet.isInline ? 'inline' : 'external'}
+												</span>
+
+												{stylesheet.loading?.isBlocking && (
+													<span className="badge badge-warning">blocking</span>
+												)}
+
+												{sizeKB && (
+													<span className="stylesheet-size">{sizeKB} KB</span>
+												)}
+											</div>
+										</div>
+									);
+								})}
 							</div>
 
 							<div className="stylesheets-note">
@@ -252,7 +301,14 @@ export default function RenderBlockingPage() {
 					</div>
 				</section>
 			)}
+				</div>
 			</main>
+
+			<footer>
+				<div className="container">
+					<p>&copy; 2024 Your Company</p>
+				</div>
+			</footer>
 		</div>
 	);
 }
