@@ -38,12 +38,12 @@ export default function PreloadPage() {
 
 		try {
 			const response = await fetch(
-				`/api/fetch-css?url=${encodeURIComponent(url)}`
+				`/api/preload-tags?url=${encodeURIComponent(url)}`
 			);
 			const data = await response.json();
 
-			if (response.ok && data.preloadTags) {
-				setPreloadTags(data.preloadTags);
+			if (response.ok && data.stats) {
+				setPreloadTags(data);
 			} else {
 				setError(data.error || "Failed to analyze page");
 			}

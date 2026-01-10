@@ -3,30 +3,14 @@ import cssnano from "cssnano";
 import postcss from "postcss";
 import { PurgeCSS } from "purgecss";
 
+// Import shared browser module
+import { createBrowserWithPage } from "../../lib/browser/index.js";
+
 // Import feature modules
-import {
-	captureAboveTheFoldHTML,
-	VIEWPORT_CONFIG,
-} from "../../lib/features/above-the-fold/index.js";
-import {
-	extractPreloadableResources,
-	generateAllPreloadTags,
-} from "../../lib/features/preload-generator/index.js";
+import { captureAboveTheFoldHTML } from "../../lib/features/above-the-fold/index.js";
 
 // Valid mode values for CSS extraction
 const VALID_MODES = ["full", "above-fold"];
-
-// Conditionally import puppeteer based on environment
-const isDev = process.env.NODE_ENV === "development";
-let puppeteer;
-let chromium;
-
-if (isDev) {
-	puppeteer = (await import("puppeteer")).default;
-} else {
-	puppeteer = (await import("puppeteer-core")).default;
-	chromium = (await import("@sparticuz/chromium")).default;
-}
 
 /**
  * Formats byte size to human-readable string
@@ -146,33 +130,6 @@ function createEmptyResponse(
 	};
 }
 
-/**
- * Gets browser launch options based on environment
- * @returns {Promise<Object>} Puppeteer launch options
- */
-async function getBrowserOptions() {
-	const baseArgs = [
-		"--no-sandbox",
-		"--disable-setuid-sandbox",
-		"--disable-dev-shm-usage",
-		"--disable-gpu",
-	];
-
-	if (isDev) {
-		return { args: baseArgs, headless: true };
-	}
-
-	if (!chromium) {
-		throw new Error("Chromium module not loaded in production environment");
-	}
-
-	return {
-		args: [...baseArgs, ...chromium.args],
-		headless: chromium.headless,
-		executablePath: await chromium.executablePath(),
-		ignoreHTTPSErrors: true,
-	};
-}
 
 /**
  * API Route Handler - Extract and process CSS from a URL
@@ -190,7 +147,6 @@ async function getBrowserOptions() {
  * @returns {string} minified - All stylesheets combined and minified
  * @returns {string} unminified - All stylesheets combined without minification
  * @returns {string} critical - CSS purged to only include rules used in the HTML
- * @returns {Object} preloadTags - Generated preload/prefetch tags for performance
  * @returns {Array<Object>} stylesheets - Metadata for each extracted stylesheet:
  *   - id: Unique identifier
  *   - url: Full stylesheet URL
@@ -200,7 +156,7 @@ async function getBrowserOptions() {
  *
  * @example
  * // GET /api/fetch-css?url=https://example.com
- * // Response: { minified: "...", unminified: "...", critical: "...", preloadTags: {...}, stylesheets: [...] }
+ * // Response: { minified: "...", unminified: "...", critical: "...", stylesheets: [...] }
  *
  * @example
  * // GET /api/fetch-css?url=https://example.com&mode=above-fold
@@ -223,29 +179,15 @@ export default async function handler(req, res) {
 
 	let browser;
 	try {
-		const launchOptions = await getBrowserOptions();
-		browser = await puppeteer.launch(launchOptions);
-		const page = await browser.newPage();
-
-		await page.goto(url, {
-			waitUntil: "networkidle2",
-			timeout: 30000,
-		});
-
-		await page.setViewport({
-			width: VIEWPORT_CONFIG.width,
-			height: VIEWPORT_CONFIG.height,
-		});
+		const result = await createBrowserWithPage(url);
+		browser = result.browser;
+		const page = result.page;
 
 		const fullHtmlContent = await page.content();
 		const htmlForPurge =
 			mode === "above-fold"
 				? await captureAboveTheFoldHTML(page, { skipViewportSet: true })
 				: fullHtmlContent;
-
-		// Extract preloadable resources
-		const preloadResources = await extractPreloadableResources(page);
-		const preloadTags = generateAllPreloadTags(preloadResources);
 
 		const cssLinks = await page.evaluate(() => {
 			return Array.from(
@@ -258,17 +200,7 @@ export default async function handler(req, res) {
 
 		// Handle case where no stylesheets were found
 		if (cssLinks.length === 0) {
-			return res.status(200).json({
-				...createEmptyResponse(mode),
-				preloadTags: {
-					html: preloadTags.html,
-					fontPreloads: preloadTags.fontPreloads,
-					imagePreloads: preloadTags.imagePreloads,
-					dnsPrefetch: preloadTags.dnsPrefetch,
-					preconnect: preloadTags.preconnect,
-					stats: preloadTags.stats,
-				},
-			});
+			return res.status(200).json(createEmptyResponse(mode));
 		}
 
 		// Fetch all stylesheets in parallel, handling individual failures gracefully
@@ -317,14 +249,6 @@ export default async function handler(req, res) {
 			unminified: combinedCss,
 			critical: criticalCss,
 			stylesheets,
-			preloadTags: {
-				html: preloadTags.html,
-				fontPreloads: preloadTags.fontPreloads,
-				imagePreloads: preloadTags.imagePreloads,
-				dnsPrefetch: preloadTags.dnsPrefetch,
-				preconnect: preloadTags.preconnect,
-				stats: preloadTags.stats,
-			},
 			mode,
 			sizes: {
 				original: originalSize,
