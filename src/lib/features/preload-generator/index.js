@@ -27,7 +27,15 @@ const FONT_EXTENSIONS = [".woff2", ".woff", ".ttf", ".otf", ".eot"];
 /**
  * Common image file extensions
  */
-const IMAGE_EXTENSIONS = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".svg"];
+const IMAGE_EXTENSIONS = [
+	".png",
+	".jpg",
+	".jpeg",
+	".gif",
+	".webp",
+	".avif",
+	".svg",
+];
 
 /**
  * Extracts all preloadable resources from a Puppeteer page.
@@ -41,6 +49,7 @@ export async function extractPreloadableResources(page) {
 		const images = [];
 		const styles = [];
 		const scripts = [];
+		const preconnect = [];
 		const externalDomains = new Set();
 
 		// Extract fonts from @font-face rules in stylesheets
@@ -49,11 +58,16 @@ export async function extractPreloadableResources(page) {
 				for (const rule of sheet.cssRules || []) {
 					if (rule instanceof CSSFontFaceRule) {
 						const src = rule.style.getPropertyValue("src");
-						const urlMatch = src.match(/url\(['"]?([^'")\s]+)['"]?\)/);
+						const urlMatch = src.match(
+							/url\(['"]?([^'")\s]+)['"]?\)/
+						);
 						if (urlMatch) {
 							fonts.push({
 								url: urlMatch[1],
-								format: urlMatch[1].match(/\.(woff2?|ttf|otf|eot)/i)?.[1] || "woff2",
+								format:
+									urlMatch[1].match(
+										/\.(woff2?|ttf|otf|eot)/i
+									)?.[1] || "woff2",
 							});
 						}
 					}
@@ -79,7 +93,9 @@ export async function extractPreloadableResources(page) {
 		});
 
 		// Extract background images from inline styles and computed styles
-		const elementsWithBg = document.querySelectorAll("[style*='background']");
+		const elementsWithBg = document.querySelectorAll(
+			"[style*='background']"
+		);
 		elementsWithBg.forEach((el) => {
 			const rect = el.getBoundingClientRect();
 			if (rect.top < viewportHeight) {
@@ -92,6 +108,19 @@ export async function extractPreloadableResources(page) {
 						isBackground: true,
 					});
 				}
+			}
+		});
+
+		// Extract preconnect links
+		document.querySelectorAll('link[rel="preconnect"]').forEach((link) => {
+			if (link.href) {
+				preconnect.push({ url: link.href });
+				try {
+					const url = new URL(link.href);
+					if (url.origin !== window.location.origin) {
+						externalDomains.add(url.origin);
+					}
+				} catch (e) {}
 			}
 		});
 
@@ -140,6 +169,7 @@ export async function extractPreloadableResources(page) {
 			images,
 			styles,
 			scripts,
+			preconnect,
 			externalDomains: Array.from(externalDomains),
 		};
 	});
@@ -222,12 +252,23 @@ export function generatePreconnect(domains, options = {}) {
  */
 export function generateAllPreloadTags(resources, options = {}) {
 	const fontPreloads = generateFontPreloads(resources.fonts || []);
-	const imagePreloads = generateImagePreloads(resources.images || [], options);
+	const imagePreloads = generateImagePreloads(
+		resources.images || [],
+		options
+	);
 	const dnsPrefetch = generateDnsPrefetch(resources.externalDomains || []);
-	const preconnect = generatePreconnect(resources.externalDomains || [], options);
+	const preconnect = generatePreconnect(
+		resources.externalDomains || [],
+		options
+	);
 
 	// Combine all tags in recommended order
-	const allTags = [...preconnect, ...dnsPrefetch, ...fontPreloads, ...imagePreloads];
+	const allTags = [
+		...preconnect,
+		...dnsPrefetch,
+		...fontPreloads,
+		...imagePreloads,
+	];
 
 	return {
 		fontPreloads,
@@ -243,6 +284,7 @@ export function generateAllPreloadTags(resources, options = {}) {
 			imagesPreloaded: imagePreloads.length,
 			domainsPreconnected: preconnect.length,
 			domainsPrefetched: dnsPrefetch.length,
+			preconnectsFound: resources.preconnect.length,
 		},
 	};
 }

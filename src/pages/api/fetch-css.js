@@ -175,7 +175,6 @@ async function getBrowserOptions() {
 }
 
 /**
->>>>>>> origin/master
  * API Route Handler - Extract and process CSS from a URL
  *
  * Fetches a webpage using Puppeteer, extracts all linked stylesheets,
@@ -259,7 +258,17 @@ export default async function handler(req, res) {
 
 		// Handle case where no stylesheets were found
 		if (cssLinks.length === 0) {
-			return res.status(200).json(createEmptyResponse(mode));
+			return res.status(200).json({
+				...createEmptyResponse(mode),
+				preloadTags: {
+					html: preloadTags.html,
+					fontPreloads: preloadTags.fontPreloads,
+					imagePreloads: preloadTags.imagePreloads,
+					dnsPrefetch: preloadTags.dnsPrefetch,
+					preconnect: preloadTags.preconnect,
+					stats: preloadTags.stats,
+				},
+			});
 		}
 
 		// Fetch all stylesheets in parallel, handling individual failures gracefully

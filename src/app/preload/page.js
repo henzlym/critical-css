@@ -213,6 +213,19 @@ export default function PreloadPage() {
 											</span>
 										</div>
 									)}
+									{stats?.preconnectsFound > 0 && (
+										<div className="preload-stat preload-stat-existing">
+											<span className="preload-stat-value">
+												{stats.preconnectsFound}
+											</span>
+											<span className="preload-stat-label">
+												Existing
+											</span>
+											<span className="preload-stat-desc">
+												Preconnects already on page
+											</span>
+										</div>
+									)}
 								</div>
 							</section>
 

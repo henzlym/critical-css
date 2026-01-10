@@ -1374,6 +1374,16 @@ footer p {
 	letter-spacing: 0.05em;
 }
 
+/* Existing tags found (informational, not generated) */
+.preload-stat-existing {
+	border-color: rgba(164, 119, 100, 0.3);
+	background: rgba(164, 119, 100, 0.1);
+}
+
+.preload-stat-existing .preload-stat-value {
+	color: var(--mocha-mousse);
+}
+
 .preload-section {
 	margin-top: 1.5rem;
 	padding-top: 1.5rem;
