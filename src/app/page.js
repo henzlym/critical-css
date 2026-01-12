@@ -4,6 +4,7 @@ import "@wordpress/components/build-style/style.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CssResultSection from "./components/css-result-section";
 import Header from "./components/header";
+import ImplementationCodeGenerator from "./components/implementation-code-generator";
 import InstructionsDrawer from "./components/instructions-drawer";
 
 /**
@@ -40,11 +41,14 @@ export default function Home() {
 	const [aboveFoldMode, setAboveFoldMode] = useState(true);
 	const [sectionsExpanded, setSectionsExpanded] = useState({
 		minified: false,
-		critical: true,
+		critical: false,
+		implementation: false,
 	});
 
 	// Ref to track copy timeout for cleanup
 	const copyTimeoutRef = useRef(undefined);
+	// Ref for scrolling to results
+	const resultsRef = useRef(null);
 
 	// Helper function to clear copy timeout
 	const clearCopyTimeout = useCallback(() => {
@@ -107,6 +111,13 @@ export default function Home() {
 					sizes: data.sizes || undefined,
 					message: data.message || "",
 				});
+				// Scroll to results after a short delay to allow render
+				setTimeout(() => {
+					resultsRef.current?.scrollIntoView({
+						behavior: "smooth",
+						block: "start",
+					});
+				}, 100);
 			} else {
 				const errorMessage = `Error: ${data.error}\n\nDetails: ${
 					data.details || "No additional details available"
@@ -254,6 +265,7 @@ export default function Home() {
 
 					{minified && !loading && (
 						<CssResultSection
+							ref={resultsRef}
 							title="Combined & Minified CSS"
 							description="All stylesheets merged into one optimized file. Fewer HTTP requests = faster page loads."
 							cssContent={minified}
@@ -307,6 +319,15 @@ export default function Home() {
 							onCopy={() => handleCopy("critical")}
 							loading={loading}
 							variant="critical"
+						/>
+					)}
+
+					{critical && !loading && (
+						<ImplementationCodeGenerator
+							criticalCss={critical}
+							fullCssPath="/css/combined.min.css"
+							isExpanded={sectionsExpanded.implementation}
+							onToggle={() => toggleSection("implementation")}
 						/>
 					)}
 				</div>

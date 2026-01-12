@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, forwardRef } from "react";
 import {
 	CheckIcon,
 	ChevronIcon,
@@ -53,20 +53,23 @@ function downloadCSS(content, filename) {
  * @param {boolean} props.loading - Loading state
  * @param {string} props.variant - 'minified' or 'critical' for styling
  */
-export default function CssResultSection({
-	title,
-	description,
-	cssContent,
-	filename,
-	sizes,
-	isExpanded,
-	onToggle,
-	onOpenInstructions,
-	copied,
-	onCopy,
-	loading,
-	variant = "minified",
-}) {
+const CssResultSection = forwardRef(function CssResultSection(
+	{
+		title,
+		description,
+		cssContent,
+		filename,
+		sizes,
+		isExpanded,
+		onToggle,
+		onOpenInstructions,
+		copied,
+		onCopy,
+		loading,
+		variant = "minified",
+	},
+	ref
+) {
 	const [copyError, setCopyError] = useState(false);
 	const errorTimeoutRef = useRef(undefined);
 
@@ -104,7 +107,7 @@ export default function CssResultSection({
 	};
 
 	return (
-		<section className="critical-css-results">
+		<section ref={ref} className="critical-css-results">
 			<div
 				className={`critical-css-result critical-css-${variant} ${
 					isExpanded ? "expanded" : "collapsed"
@@ -219,4 +222,6 @@ export default function CssResultSection({
 			</div>
 		</section>
 	);
-}
+});
+
+export default CssResultSection;
