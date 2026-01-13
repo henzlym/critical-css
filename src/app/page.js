@@ -47,8 +47,8 @@ export default function Home() {
 
 	// Ref to track copy timeout for cleanup
 	const copyTimeoutRef = useRef(undefined);
-	// Ref for scrolling to results
-	const resultsRef = useRef(null);
+	// Ref for scrolling to target element after generation
+	const scrollTargetRef = useRef(null);
 
 	// Helper function to clear copy timeout
 	const clearCopyTimeout = useCallback(() => {
@@ -111,9 +111,14 @@ export default function Home() {
 					sizes: data.sizes || undefined,
 					message: data.message || "",
 				});
+				// Expand implementation section after generation
+				setSectionsExpanded((prev) => ({
+					...prev,
+					implementation: true,
+				}));
 				// Scroll to results after a short delay to allow render
 				setTimeout(() => {
-					resultsRef.current?.scrollIntoView({
+					scrollTargetRef.current?.scrollIntoView({
 						behavior: "smooth",
 						block: "start",
 					});
@@ -244,9 +249,23 @@ export default function Home() {
 									strokeLinecap="round"
 									strokeLinejoin="round"
 								>
-									<circle cx="12" cy="12" r="10" />
-									<line x1="12" y1="8" x2="12" y2="12" />
-									<line x1="12" y1="16" x2="12.01" y2="16" />
+									<circle
+										cx="12"
+										cy="12"
+										r="10"
+									/>
+									<line
+										x1="12"
+										y1="8"
+										x2="12"
+										y2="12"
+									/>
+									<line
+										x1="12"
+										y1="16"
+										x2="12.01"
+										y2="16"
+									/>
 								</svg>
 							</div>
 							<h3>No External Stylesheets Found</h3>
@@ -265,7 +284,6 @@ export default function Home() {
 
 					{minified && !loading && (
 						<CssResultSection
-							ref={resultsRef}
 							title="Combined & Minified CSS"
 							description="All stylesheets merged into one optimized file. Fewer HTTP requests = faster page loads."
 							cssContent={minified}
@@ -324,6 +342,7 @@ export default function Home() {
 
 					{critical && !loading && (
 						<ImplementationCodeGenerator
+							ref={scrollTargetRef}
 							criticalCss={critical}
 							fullCssPath="/css/combined.min.css"
 							isExpanded={sectionsExpanded.implementation}

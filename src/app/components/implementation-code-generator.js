@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, forwardRef } from "react";
 import { CheckIcon, ChevronIcon, CopyIcon, ErrorIcon } from "./icons";
 import PlatformTabs from "./platform-tabs";
 import { generateImplementationCode } from "../../lib/css-implementation-templates";
@@ -23,12 +23,15 @@ const PLATFORMS = [
  * @param {boolean} props.isExpanded - Whether section is expanded
  * @param {Function} props.onToggle - Toggle expand/collapse callback
  */
-export default function ImplementationCodeGenerator({
-	criticalCss,
-	fullCssPath = '/css/combined.min.css',
-	isExpanded,
-	onToggle,
-}) {
+const ImplementationCodeGenerator = forwardRef(function ImplementationCodeGenerator(
+	{
+		criticalCss,
+		fullCssPath = '/css/combined.min.css',
+		isExpanded,
+		onToggle,
+	},
+	ref
+) {
 	const [activePlatform, setActivePlatform] = useState('html');
 	const [copied, setCopied] = useState(false);
 	const [copyError, setCopyError] = useState(false);
@@ -70,7 +73,7 @@ export default function ImplementationCodeGenerator({
 	};
 
 	return (
-		<section className="implementation-generator">
+		<section ref={ref} className="implementation-generator">
 			<div
 				className={`implementation-card ${isExpanded ? 'expanded' : 'collapsed'}`}
 			>
@@ -144,4 +147,6 @@ export default function ImplementationCodeGenerator({
 			</div>
 		</section>
 	);
-}
+});
+
+export default ImplementationCodeGenerator;

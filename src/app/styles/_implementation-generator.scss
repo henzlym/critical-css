@@ -4,6 +4,7 @@
 
 .implementation-generator {
 	margin: 2rem 0;
+	scroll-margin-top: 2rem; /* Adds spacing when scrollIntoView targets this element */
 }
 
 .implementation-card {
