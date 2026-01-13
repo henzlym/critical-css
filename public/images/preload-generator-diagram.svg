@@ -1,0 +1,226 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" fill="none">
+  <defs>
+    <!-- SpeedKit Theme Gradients -->
+    <linearGradient id="etherealGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5e7ce2"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="tealGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2dd4bf"/>
+      <stop offset="50%" stop-color="#5e7ce2"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="glassGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(30, 33, 48, 0.8)"/>
+      <stop offset="100%" stop-color="rgba(30, 33, 48, 0.95)"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff6b35"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Arrow Marker -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#5e7ce2"/>
+    </marker>
+    <marker id="arrowheadTeal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2dd4bf"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="500" fill="#16171d"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity="0.03">
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#9ca8c4" stroke-width="1"/>
+    </pattern>
+    <rect width="900" height="500" fill="url(#grid)"/>
+  </g>
+
+  <!-- Title -->
+  <text x="450" y="40" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="600" fill="#f0f2f8">How the Preload Tag Generator Works</text>
+
+  <!-- Step 1: URL Input -->
+  <g transform="translate(50, 80)">
+    <!-- Glass card -->
+    <rect width="180" height="120" rx="16" fill="url(#glassGradient)" stroke="rgba(156, 168, 196, 0.15)" stroke-width="1"/>
+    <rect width="180" height="3" rx="1.5" fill="url(#etherealGradient)" y="0"/>
+
+    <!-- Icon: Globe -->
+    <circle cx="90" cy="50" r="20" fill="none" stroke="#5e7ce2" stroke-width="2" filter="url(#glow)"/>
+    <ellipse cx="90" cy="50" rx="20" ry="8" fill="none" stroke="#5e7ce2" stroke-width="1.5"/>
+    <line x1="70" y1="50" x2="110" y2="50" stroke="#5e7ce2" stroke-width="1.5"/>
+    <line x1="90" y1="30" x2="90" y2="70" stroke="#5e7ce2" stroke-width="1.5"/>
+
+    <!-- Label -->
+    <text x="90" y="95" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#f0f2f8">Enter URL</text>
+    <text x="90" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#9ca8c4">your-site.com</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <line x1="240" y1="140" x2="290" y2="140" stroke="#5e7ce2" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- Step 2: Puppeteer Analysis -->
+  <g transform="translate(300, 80)">
+    <rect width="180" height="120" rx="16" fill="url(#glassGradient)" stroke="rgba(156, 168, 196, 0.15)" stroke-width="1"/>
+    <rect width="180" height="3" rx="1.5" fill="url(#tealGradient)" y="0"/>
+
+    <!-- Icon: Browser/Scanner -->
+    <rect x="60" y="30" width="60" height="40" rx="4" fill="none" stroke="#2dd4bf" stroke-width="2" filter="url(#glow)"/>
+    <line x1="60" y1="40" x2="120" y2="40" stroke="#2dd4bf" stroke-width="1.5"/>
+    <circle cx="68" cy="35" r="2" fill="#ff6b35"/>
+    <circle cx="76" cy="35" r="2" fill="#a855f7"/>
+    <circle cx="84" cy="35" r="2" fill="#2dd4bf"/>
+
+    <!-- Scan lines animation hint -->
+    <line x1="65" y1="50" x2="115" y2="50" stroke="#2dd4bf" stroke-width="1" opacity="0.5"/>
+    <line x1="65" y1="56" x2="100" y2="56" stroke="#2dd4bf" stroke-width="1" opacity="0.3"/>
+    <line x1="65" y1="62" x2="108" y2="62" stroke="#2dd4bf" stroke-width="1" opacity="0.4"/>
+
+    <text x="90" y="95" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#f0f2f8">Analyze Page</text>
+    <text x="90" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#9ca8c4">Puppeteer scan</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <line x1="490" y1="140" x2="540" y2="140" stroke="#2dd4bf" stroke-width="2" marker-end="url(#arrowheadTeal)"/>
+
+  <!-- Step 3: Resource Detection -->
+  <g transform="translate(550, 80)">
+    <rect width="180" height="120" rx="16" fill="url(#glassGradient)" stroke="rgba(156, 168, 196, 0.15)" stroke-width="1"/>
+    <rect width="180" height="3" rx="1.5" fill="url(#accentGradient)" y="0"/>
+
+    <!-- Icon: Resources found -->
+    <g transform="translate(55, 25)">
+      <!-- Font icon -->
+      <rect x="0" y="0" width="20" height="20" rx="3" fill="none" stroke="#a855f7" stroke-width="1.5"/>
+      <text x="10" y="15" text-anchor="middle" font-family="serif" font-size="12" font-weight="bold" fill="#a855f7">A</text>
+
+      <!-- Image icon -->
+      <rect x="25" y="0" width="20" height="20" rx="3" fill="none" stroke="#2dd4bf" stroke-width="1.5"/>
+      <circle cx="31" cy="8" r="2" fill="#2dd4bf"/>
+      <path d="M27 17 L32 12 L37 15 L43 10" stroke="#2dd4bf" stroke-width="1.5" fill="none"/>
+
+      <!-- CSS icon -->
+      <rect x="50" y="0" width="20" height="20" rx="3" fill="none" stroke="#ff6b35" stroke-width="1.5"/>
+      <text x="60" y="14" text-anchor="middle" font-family="monospace" font-size="8" font-weight="bold" fill="#ff6b35">{}</text>
+    </g>
+
+    <!-- Detection lines -->
+    <g transform="translate(60, 55)">
+      <rect x="0" y="0" width="60" height="6" rx="3" fill="#a855f7" opacity="0.6"/>
+      <rect x="0" y="10" width="45" height="6" rx="3" fill="#2dd4bf" opacity="0.6"/>
+      <rect x="0" y="20" width="55" height="6" rx="3" fill="#ff6b35" opacity="0.6"/>
+    </g>
+
+    <text x="90" y="95" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#f0f2f8">Detect Resources</text>
+    <text x="90" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#9ca8c4">Fonts, Images, CSS</text>
+  </g>
+
+  <!-- Arrow 3 (down) -->
+  <path d="M 640 210 L 640 250 L 640 270" stroke="url(#accentGradient)" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- Step 4: Generate Tags (center bottom) -->
+  <g transform="translate(450, 280)">
+    <rect width="380" height="140" rx="16" fill="url(#glassGradient)" stroke="rgba(94, 124, 226, 0.3)" stroke-width="1"/>
+    <rect width="380" height="4" rx="2" fill="url(#etherealGradient)" y="0"/>
+
+    <!-- Code block -->
+    <g transform="translate(20, 25)">
+      <rect width="340" height="80" rx="8" fill="#0d0e12" stroke="rgba(156, 168, 196, 0.1)" stroke-width="1"/>
+
+      <!-- Code syntax -->
+      <text x="15" y="25" font-family="Monaco, Consolas, monospace" font-size="11" fill="#a855f7">&lt;link</text>
+      <text x="50" y="25" font-family="Monaco, Consolas, monospace" font-size="11" fill="#2dd4bf">rel=</text>
+      <text x="80" y="25" font-family="Monaco, Consolas, monospace" font-size="11" fill="#ff6b35">"preload"</text>
+      <text x="145" y="25" font-family="Monaco, Consolas, monospace" font-size="11" fill="#2dd4bf">href=</text>
+      <text x="180" y="25" font-family="Monaco, Consolas, monospace" font-size="11" fill="#ff6b35">"/font.woff2"</text>
+      <text x="275" y="25" font-family="Monaco, Consolas, monospace" font-size="11" fill="#a855f7">&gt;</text>
+
+      <text x="15" y="45" font-family="Monaco, Consolas, monospace" font-size="11" fill="#a855f7">&lt;link</text>
+      <text x="50" y="45" font-family="Monaco, Consolas, monospace" font-size="11" fill="#2dd4bf">rel=</text>
+      <text x="80" y="45" font-family="Monaco, Consolas, monospace" font-size="11" fill="#ff6b35">"preload"</text>
+      <text x="145" y="45" font-family="Monaco, Consolas, monospace" font-size="11" fill="#2dd4bf">href=</text>
+      <text x="180" y="45" font-family="Monaco, Consolas, monospace" font-size="11" fill="#ff6b35">"/hero.jpg"</text>
+      <text x="260" y="45" font-family="Monaco, Consolas, monospace" font-size="11" fill="#2dd4bf">as=</text>
+      <text x="282" y="45" font-family="Monaco, Consolas, monospace" font-size="11" fill="#ff6b35">"image"</text>
+      <text x="325" y="45" font-family="Monaco, Consolas, monospace" font-size="11" fill="#a855f7">&gt;</text>
+
+      <text x="15" y="65" font-family="Monaco, Consolas, monospace" font-size="11" fill="#a855f7">&lt;link</text>
+      <text x="50" y="65" font-family="Monaco, Consolas, monospace" font-size="11" fill="#2dd4bf">rel=</text>
+      <text x="80" y="65" font-family="Monaco, Consolas, monospace" font-size="11" fill="#ff6b35">"preconnect"</text>
+      <text x="165" y="65" font-family="Monaco, Consolas, monospace" font-size="11" fill="#2dd4bf">href=</text>
+      <text x="200" y="65" font-family="Monaco, Consolas, monospace" font-size="11" fill="#ff6b35">"https://fonts..."</text>
+      <text x="305" y="65" font-family="Monaco, Consolas, monospace" font-size="11" fill="#a855f7">&gt;</text>
+    </g>
+
+    <text x="190" y="125" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#f0f2f8">Generated Preload Tags</text>
+  </g>
+
+  <!-- Arrow 4 (left, going to output) -->
+  <path d="M 450 350 L 350 350 L 250 350" stroke="#5e7ce2" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- Step 5: Copy & Implement -->
+  <g transform="translate(50, 280)">
+    <rect width="180" height="140" rx="16" fill="url(#glassGradient)" stroke="rgba(45, 212, 191, 0.3)" stroke-width="1"/>
+    <rect width="180" height="4" rx="2" fill="#2dd4bf" y="0"/>
+
+    <!-- Copy icon -->
+    <g transform="translate(65, 30)">
+      <rect x="0" y="5" width="30" height="35" rx="4" fill="none" stroke="#2dd4bf" stroke-width="2"/>
+      <rect x="10" y="0" width="30" height="35" rx="4" fill="#1e2130" stroke="#2dd4bf" stroke-width="2"/>
+      <line x1="18" y1="12" x2="32" y2="12" stroke="#2dd4bf" stroke-width="1.5"/>
+      <line x1="18" y1="20" x2="28" y2="20" stroke="#2dd4bf" stroke-width="1.5"/>
+      <line x1="18" y1="28" x2="30" y2="28" stroke="#2dd4bf" stroke-width="1.5"/>
+    </g>
+
+    <!-- Checkmark -->
+    <circle cx="130" cy="45" r="12" fill="none" stroke="#2dd4bf" stroke-width="2" filter="url(#glow)"/>
+    <path d="M 124 45 L 128 49 L 136 41" stroke="#2dd4bf" stroke-width="2.5" fill="none"/>
+
+    <text x="90" y="95" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#f0f2f8">Copy to Clipboard</text>
+    <text x="90" y="112" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#9ca8c4">Paste in &lt;head&gt;</text>
+
+    <!-- Result badge -->
+    <g transform="translate(40, 118)">
+      <rect width="100" height="20" rx="10" fill="rgba(45, 212, 191, 0.15)" stroke="#2dd4bf" stroke-width="1"/>
+      <text x="50" y="14" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#2dd4bf">Faster LCP</text>
+    </g>
+  </g>
+
+  <!-- Bottom stats bar -->
+  <g transform="translate(50, 450)">
+    <rect width="800" height="35" rx="8" fill="rgba(30, 33, 48, 0.8)" stroke="rgba(156, 168, 196, 0.1)" stroke-width="1"/>
+
+    <!-- Stats -->
+    <g transform="translate(40, 0)">
+      <circle cx="0" cy="17" r="5" fill="#2dd4bf"/>
+      <text x="15" y="22" font-family="system-ui, sans-serif" font-size="12" fill="#9ca8c4">Fonts detected</text>
+    </g>
+
+    <g transform="translate(200, 0)">
+      <circle cx="0" cy="17" r="5" fill="#a855f7"/>
+      <text x="15" y="22" font-family="system-ui, sans-serif" font-size="12" fill="#9ca8c4">Critical images</text>
+    </g>
+
+    <g transform="translate(380, 0)">
+      <circle cx="0" cy="17" r="5" fill="#ff6b35"/>
+      <text x="15" y="22" font-family="system-ui, sans-serif" font-size="12" fill="#9ca8c4">External domains</text>
+    </g>
+
+    <g transform="translate(580, 0)">
+      <circle cx="0" cy="17" r="5" fill="#5e7ce2"/>
+      <text x="15" y="22" font-family="system-ui, sans-serif" font-size="12" fill="#9ca8c4">Tags generated</text>
+    </g>
+  </g>
+</svg>
