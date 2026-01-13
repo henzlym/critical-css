@@ -4,6 +4,7 @@ import "@wordpress/components/build-style/style.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CssResultSection from "./components/css-result-section";
 import Header from "./components/header";
+import ImplementationCodeGenerator from "./components/implementation-code-generator";
 import InstructionsDrawer from "./components/instructions-drawer";
 
 /**
@@ -40,11 +41,14 @@ export default function Home() {
 	const [aboveFoldMode, setAboveFoldMode] = useState(true);
 	const [sectionsExpanded, setSectionsExpanded] = useState({
 		minified: false,
-		critical: true,
+		critical: false,
+		implementation: false,
 	});
 
 	// Ref to track copy timeout for cleanup
 	const copyTimeoutRef = useRef(undefined);
+	// Ref for scrolling to target element after generation
+	const scrollTargetRef = useRef(null);
 
 	// Helper function to clear copy timeout
 	const clearCopyTimeout = useCallback(() => {
@@ -107,6 +111,18 @@ export default function Home() {
 					sizes: data.sizes || undefined,
 					message: data.message || "",
 				});
+				// Expand implementation section after generation
+				setSectionsExpanded((prev) => ({
+					...prev,
+					implementation: true,
+				}));
+				// Scroll to results after a short delay to allow render
+				setTimeout(() => {
+					scrollTargetRef.current?.scrollIntoView({
+						behavior: "smooth",
+						block: "start",
+					});
+				}, 100);
 			} else {
 				const errorMessage = `Error: ${data.error}\n\nDetails: ${
 					data.details || "No additional details available"
@@ -233,9 +249,23 @@ export default function Home() {
 									strokeLinecap="round"
 									strokeLinejoin="round"
 								>
-									<circle cx="12" cy="12" r="10" />
-									<line x1="12" y1="8" x2="12" y2="12" />
-									<line x1="12" y1="16" x2="12.01" y2="16" />
+									<circle
+										cx="12"
+										cy="12"
+										r="10"
+									/>
+									<line
+										x1="12"
+										y1="8"
+										x2="12"
+										y2="12"
+									/>
+									<line
+										x1="12"
+										y1="16"
+										x2="12.01"
+										y2="16"
+									/>
 								</svg>
 							</div>
 							<h3>No External Stylesheets Found</h3>
@@ -307,6 +337,16 @@ export default function Home() {
 							onCopy={() => handleCopy("critical")}
 							loading={loading}
 							variant="critical"
+						/>
+					)}
+
+					{critical && !loading && (
+						<ImplementationCodeGenerator
+							ref={scrollTargetRef}
+							criticalCss={critical}
+							fullCssPath="/css/combined.min.css"
+							isExpanded={sectionsExpanded.implementation}
+							onToggle={() => toggleSection("implementation")}
 						/>
 					)}
 				</div>
